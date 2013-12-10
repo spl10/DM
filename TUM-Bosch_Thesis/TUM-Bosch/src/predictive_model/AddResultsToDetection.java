@@ -6,10 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import model_class.WEKAInputFiles;
 
 public class AddResultsToDetection {
 	/**
@@ -17,22 +20,21 @@ public class AddResultsToDetection {
 	 * detection file. Example Detection File:
 	 * "..\gateway_206010347\out_gt206010347_Actual.csv"
 	 * 
-	 * @param date
+	 * @param dates
 	 * @param li_dsm
 	 * @param detection_filepath
 	 * @throws Exception
 	 */
-	public static String DetectionModel(String[] date, List<String> li_dsm,
-			String detection_filepath) throws Exception {
+	public static WEKAInputFiles DetectionModel(String[] dates,
+			List<String> li_dsm, String detection_filepath) throws Exception {
 		// To check for empty file, to write the header to the file.
 		Boolean emptyFile = false;
 		File f = new File(detection_filepath);
-
+		WEKAInputFiles wif = new WEKAInputFiles();
 		// If the data is not found in detection_filepath, it is written into
 		// the detection_filepath.
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				detection_filepath, true));
-		String prediction_filepath = null;
 
 		// List of previously available detection data.
 		List<String> actual_files = new ArrayList<String>();
@@ -41,6 +43,11 @@ public class AddResultsToDetection {
 			System.out.println("Empty File");
 			emptyFile = true;
 		}
+		String date_for_prediction = dateSelectedByUser(dates);
+		List<String> date = TrimDateArray(date_for_prediction, dates);
+		String[] new_dates = new String[date.size()];
+		date.toArray(new_dates);
+		System.out.println("New Dates: " + date);
 
 		for (int i = li_dsm.size(); i > 0; i--) {
 			String filepath = li_dsm.get(i - 1);
@@ -67,16 +74,62 @@ public class AddResultsToDetection {
 
 				// Checks whether the content of filepath is already available,
 				// if not writes the content into the filepath.
-				preventRewriting_days(date, detection_filepath, filepath);
+				preventRewriting_days(new_dates, detection_filepath, filepath);
 
 				// Creates prediction file for the last date in the last month
 				// in the list of files.
 				if (i == 1)
-					prediction_filepath = createPredictionFile(filepath, date);
+					wif.setPrediction_filepath(createPredictionFile(filepath,
+							new_dates));
+
 			}
 			br.close();
 		}
-		return prediction_filepath;
+		return wif;
+	}
+
+	/**
+	 * Get the date for prediction from the user. Show a list of dates from the
+	 * main file.
+	 * 
+	 * @param date
+	 * @return
+	 * @throws IOException
+	 */
+	public static String dateSelectedByUser(String[] dates) throws IOException {
+
+		System.out.println("Available dates for prediction: ");
+		for (int i = 0; i < dates.length; i++) {
+			System.out.println((i + 1) + ") " + dates[i]);
+		}
+		System.out.println("Enter the date to be predicted "
+				+ "in the same format listed above: ");
+		BufferedReader input = new BufferedReader(new InputStreamReader(
+				System.in));
+		int inp = Integer.parseInt(input.readLine());
+		return dates[inp - 1];
+	}
+
+	/**
+	 * Remove all the dates after the date selected by the user.For prediction,
+	 * we use only the past information, future information is not necessary.
+	 * 
+	 * @param date_for_prediction
+	 * @param dates
+	 * @return
+	 */
+	public static List<String> TrimDateArray(String date_for_prediction,
+			String[] dates) {
+		List<String> new_dates = new ArrayList<String>();
+		dates: for (int i = 0; i < dates.length; i++) {
+			if (!dates[i].equals(date_for_prediction)) {
+				new_dates.add(dates[i]);
+			} else {
+				new_dates.add(dates[i]);
+				break dates;
+			}
+		}
+		return new_dates;
 	}
 
 	/**
@@ -102,18 +155,24 @@ public class AddResultsToDetection {
 		String line = br.readLine();
 		int i = 0;
 
-		bw.write("date,time,weekday,LABEL\n");
+		bw.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
 		while ((line = br.readLine()) != null) {
 			if (line.split(",")[0].equals(dates[dates.length - 1])) {
 				if (i == 0)
 					bw.write(line.split(",")[0] + "," + line.split(",")[1]
-							+ "," + line.split(",")[2] + ",USAGE" + "\n");
+							+ "," + line.split(",")[2] + ","
+							+ line.split(",")[4] + "," + line.split(",")[5]
+							+ ",USAGE" + "\n");
 				else if (i == 1)
 					bw.write(line.split(",")[0] + "," + line.split(",")[1]
-							+ "," + line.split(",")[2] + ",NO USAGE" + "\n");
+							+ "," + line.split(",")[2] + ","
+							+ line.split(",")[4] + "," + line.split(",")[5]
+							+ ",NO USAGE" + "\n");
 				else
 					bw.write(line.split(",")[0] + "," + line.split(",")[1]
-							+ "," + line.split(",")[2] + ",?" + "\n");
+							+ "," + line.split(",")[2] + ","
+							+ line.split(",")[4] + "," + line.split(",")[5]
+							+ ",?" + "\n");
 				i++;
 			}
 		}
@@ -126,13 +185,13 @@ public class AddResultsToDetection {
 	 * With the array of missing dates, writes the data with missing dates into
 	 * detection file.
 	 * 
-	 * @param dates
+	 * @param new_dates
 	 * 
 	 * @param detection_filepath
 	 * @param filepath
 	 * @throws Exception
 	 */
-	public static void preventRewriting_days(String[] dates,
+	public static void preventRewriting_days(String[] new_dates,
 			String detection_filepath, String filepath) throws Exception {
 
 		String[] missing_dates = findMissingDates(detection_filepath, filepath);
@@ -140,14 +199,17 @@ public class AddResultsToDetection {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				detection_filepath, true));
 		int i = 0;
-		while (i < missing_dates.length && missing_dates[i] != null) {
+		dates: while (i < missing_dates.length && missing_dates[i] != null) {
 			BufferedReader br = new BufferedReader(new FileReader(filepath));
 			String header = br.readLine();
 			String line = header;
 			while ((line = br.readLine()) != null)
 				if (line.split(",")[0].equals(missing_dates[i])) {
-					if (!line.split(",")[0].equals(dates[dates.length - 1])) {
+					if (!line.split(",")[0]
+							.equals(new_dates[new_dates.length - 1])) {
 						bw.write(line + "\n");
+					} else {
+						break dates;
 					}
 				}
 			br.close();

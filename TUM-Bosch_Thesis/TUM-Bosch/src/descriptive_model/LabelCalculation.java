@@ -18,8 +18,8 @@ import model_class.WEKAInputFiles;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 
+import predictive_model.Probablistic_Model;
 import predictive_model.User_Input_For_Prediction;
-import predictive_model.Weka_Algorithm_For_Prediction;
 
 /* Label is calculated based on the parameters 
  * selected by the user. 
@@ -35,9 +35,9 @@ public class LabelCalculation {
 			throws Exception {
 		int timecount = 24 * (60 / timestep);
 		int uniquedate_l = uniqueSet.toArray().length;
-		String[] Date = new String[uniquedate_l];
+		String[] dates = new String[uniquedate_l];
 		for (int i = 0; i < uniquedate_l; i++) {
-			Date[i] = uniqueSet.toArray()[i].toString(); // For User Input
+			dates[i] = uniqueSet.toArray()[i].toString(); // For User Input
 		}
 
 		BufferedReader br = new BufferedReader(new FileReader(filepath));
@@ -152,7 +152,7 @@ public class LabelCalculation {
 		j = 0;
 		while (j < at.length) {
 			for (i = 0; i < timecount; i++) {
-				Date[j] = uniqueSet.toArray()[j].toString();
+				dates[j] = uniqueSet.toArray()[j].toString();
 				bw_actual.write(uniqueSet.toArray()[j] + "," + time[i] + ","
 						+ weekday[j][i]);
 				bw_predicted.write(uniqueSet.toArray()[j] + "," + time[i] + ","
@@ -178,7 +178,7 @@ public class LabelCalculation {
 		prediction.setLabel(label);
 		prediction.setTime(time);
 		prediction.setParam(param);
-		prediction.setDate(Date);
+		prediction.setDate(dates);
 		for (i = 0; i < at.length; i++) {
 			for (j = 0; j < timecount; j++) {
 				System.out.print("date[" + i + "]: " + prediction.getDate()[i]
@@ -200,7 +200,7 @@ public class LabelCalculation {
 		bw_actual.flush();
 		bw_actual.close();
 		br.close();
-		WEKAInputFiles wif = User_Input_For_Prediction.userInput(Date,
+		WEKAInputFiles wif = User_Input_For_Prediction.userInput(dates,
 				filepath, timestep);
 		System.out.println(file_predict);
 		String file = wif.getDetection_filepath().substring(0,
@@ -213,11 +213,12 @@ public class LabelCalculation {
 		file = Weka_Algorithm.applyWeka(wif.getDetection_filepath());
 
 		System.out.println("\n" + wif.getPrediction_filepath() + "\n");
-		Weka_Algorithm_For_Prediction.applyWeka(file,
-				wif.getPrediction_filepath(), prediction, names);
-		Weka_Algorithm_For_Prediction.dailyBasisFiles(file, file_predict,
-				prediction, names);
-
+		Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
+				wif.getPrediction_filepath(), timestep);
+		// Weka_Algorithm_For_Prediction.applyWeka(file,
+		// wif.getPrediction_filepath(), prediction, names);
+		// Weka_Algorithm_For_Prediction.dailyBasisFiles(file, file_predict,
+		// prediction, names);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

@@ -1,15 +1,17 @@
 package predictive_model;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 
 import model_class.Prediction;
-import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.misc.InputMappedClassifier;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
 import data_preprocessing.outputfile.CSVToArffConversion;
 import descriptive_model.Weka_Algorithm;
@@ -23,6 +25,7 @@ public class Weka_Algorithm_For_Prediction {
 		String file = CSVToArffConversion.convertCSVtoArff(filepath_predict);
 		System.out.println("filepath_detect" + filepath_detect
 				+ "\nfilepath_predict: " + filepath_predict);
+
 		DataSource source = new DataSource(file);
 		DataSource train_data = new DataSource(filepath_detect);
 
@@ -33,23 +36,26 @@ public class Weka_Algorithm_For_Prediction {
 		test.setClassIndex(test.numAttributes() - 1);
 
 		RandomForest rt = new RandomForest();
-		rt.setSeed(5);
-		rt.buildClassifier(train);
+		rt.setSeed(1);
 
-		FilteredClassifier fc = new FilteredClassifier();
-		Remove rm = new Remove();
-		rm.setAttributeIndices("4,5,6,7,8,9");
-		fc.setFilter(rm);
-		fc.setClassifier(rt);
-		fc.buildClassifier(train);
+		String[] options = new String[2];
+		options[0] = "-R";
+		options[1] = "4,5,6,7,8,9";
+		Remove remove = new Remove();
+		remove.setOptions(options);
+		remove.setInputFormat(train);
+		Instances newTrain = Filter.useFilter(train, remove);
 
 		InputMappedClassifier classifier = new InputMappedClassifier();
 		classifier.setModelHeader(test);
 		classifier.setTrim(true);
 		classifier.setIgnoreCaseForNames(true);
-		classifier.setClassifier(rt);
 		classifier.constructMappedInstance(test.get(0));
+		classifier.setClassifier(rt);
+		classifier.buildClassifier(newTrain);
 
+		System.out
+				.println("train.numAttributes(): " + newTrain.numAttributes());
 		String final_output = filepath_predict.substring(0,
 				filepath_predict.indexOf("."))
 				+ "_Final.csv";
@@ -62,23 +68,21 @@ public class Weka_Algorithm_For_Prediction {
 		BufferedWriter bw_predict = new BufferedWriter(new FileWriter(
 				final_output));
 
-		bw_predict.write("date,time,weekday");
-		// for (int n = 1; n < names.length; n++) {
-		// bw_predict.write("," + names[n]);
-		// }
-		bw_predict.write(",LABEL\n");
+		// bw_predict.write("date,time,weekday");
+		// // for (int n = 1; n < names.length; n++) {
+		// // bw_predict.write("," + names[n]);
+		// // }
+		// bw_predict.write(",LABEL\n");
 
-		int k = 0, j = 0;
+		int j = 0;
 		String[] time = prediction.getTime();
 		String[] date = prediction.getDate();
-		String[][] weekday = prediction.getWeekday();
+		// String[][] weekday = prediction.getWeekday();
 		String[][] label_pred = new String[date.length][time.length];
-		Double[][][] param = prediction.getParam();
+		// Double[][][] param = prediction.getParam();
 		System.out.println(test.numInstances());
-		// classifier
-		// meta-classifier
 		for (int i = 0; i < test.numInstances(); i++) {
-			double pred = classifier.classifyInstance(test.instance(i));
+			double pred = rt.classifyInstance(test.instance(i));
 			System.out.print("ID: " + test.instance(i).value(1));
 			System.out.print(",time: "
 					+ time[i]
@@ -87,20 +91,35 @@ public class Weka_Algorithm_For_Prediction {
 							(int) test.instance(i).classValue()));
 			System.out.println(", predicted: "
 					+ test.classAttribute().value((int) pred));
-			label_pred[date.length - 1][i] = test.classAttribute().value(
-					(int) pred);
+			if (pred == 1.0)
+				label_pred[date.length - 1][i] = "USAGE";
+			else
+				label_pred[date.length - 1][i] = "NO USAGE";
 		}
-		for (j = 0; j < time.length; j++) {
-			bw_predict.write(date[date.length - 1] + "," + time[j] + ","
-					+ weekday[date.length - 1][j]);
-			// for (k = 1; k < names.length; k++) {
-			// bw_predict.write("," + param[k][i][j]);
-			// }
-			bw_predict.write("," + label_pred[date.length - 1][j] + "\n");
+		// for (j = 0; j < time.length; j++) {
+		// bw_predict.write(date[date.length - 1] + "," + time[j] + ","
+		// + weekday[date.length - 1][j]);
+		// // for (k = 1; k < names.length; k++) {
+		// // bw_predict.write("," + param[k][i][j]);
+		// // }
+		// bw_predict.write("," + label_pred[date.length - 1][j] + "\n");
+		// }
+		BufferedReader br = new BufferedReader(new FileReader(filepath_predict));
+		String line = br.readLine();
+		bw_predict.write(line + "\n");
+		System.out.println(line);
+		j = 0;
+		while ((line = br.readLine()) != null) {
+			bw_predict.write(line.substring(0, line.lastIndexOf(",")) + ","
+					+ label_pred[date.length - 1][j] + "\n");
+			System.out.println(line.substring(0, line.lastIndexOf(",")) + ","
+					+ label_pred[date.length - 1][j]);
+			j++;
 		}
+		br.close();
 		bw_predict.flush();
 		bw_predict.close();
-		Weka_Algorithm.applyWeka_Prediction(final_output);
+		Weka_Algorithm.applyWeka_Prediction(filepath_detect, final_output);
 	}
 
 	public static void dailyBasisFiles(String filepath_detect,
@@ -114,7 +133,7 @@ public class Weka_Algorithm_For_Prediction {
 		String[][] label = prediction.getLabel();
 		String[] file_inputs = new String[date.length];
 		String[] file_outputs = new String[date.length];
-		Double[][][] param = prediction.getParam();
+		// Double[][][] param = prediction.getParam();
 		int i = 0;
 		while (i < date.length) {
 			String file_act = filepath_detect.substring(0,
@@ -228,7 +247,7 @@ public class Weka_Algorithm_For_Prediction {
 		String[] time = prediction.getTime();
 		String[] weekday = prediction.getWeekday()[pos];
 		String[] label_pred = new String[time.length];
-		Double[][][] param = prediction.getParam();
+		// Double[][][] param = prediction.getParam();
 
 		DataSource test_data = new DataSource(file_predict);
 		DataSource train_data = new DataSource(filepath_detect);
@@ -240,23 +259,23 @@ public class Weka_Algorithm_For_Prediction {
 		test.setClassIndex(test.numAttributes() - 1);
 
 		RandomForest rt = new RandomForest();
-		rt.setSeed(5);
-		rt.buildClassifier(train);
+		rt.setSeed(1);
 
-		Remove rm = new Remove();
-		rm.setAttributeIndices("4,5,6,7,8,9");
-		FilteredClassifier fc = new FilteredClassifier();
-		fc.setFilter(rm);
-		fc.setClassifier(rt);
-		fc.buildClassifier(train);
+		String[] options = new String[2];
+		options[0] = "-R";
+		options[1] = "4,5,6,7,8,9";
+		Remove remove = new Remove();
+		remove.setOptions(options);
+		remove.setInputFormat(train);
+		Instances newTrain = Filter.useFilter(train, remove);
+
 		InputMappedClassifier classifier = new InputMappedClassifier();
+		classifier.setModelHeader(test);
+		classifier.setTrim(true);
 		classifier.setIgnoreCaseForNames(true);
-		classifier.setModelHeader(train);
 		classifier.constructMappedInstance(test.get(0));
-		classifier.setClassifier(fc);
-		System.out.println("getMappedClassIndex: "
-				+ classifier.getMappedClassIndex());
-		classifier.buildClassifier(train);
+		classifier.setClassifier(rt);
+		classifier.buildClassifier(newTrain);
 
 		String final_output = filepath_predict.substring(0,
 				filepath_predict.indexOf("."))
@@ -278,7 +297,10 @@ public class Weka_Algorithm_For_Prediction {
 		for (k = 0; k < test.numInstances(); k++) {
 			double pred = classifier.classifyInstance(test.instance(k));
 			int id = (int) Math.round(test.instance(k).value(1));
-			label_pred[k] = test.classAttribute().value((int) pred);
+			if (pred == 1.0)
+				label_pred[k] = "USAGE";
+			else
+				label_pred[k] = "NO USAGE";
 			System.out
 					.println("pred: "
 							+ pred
@@ -287,9 +309,6 @@ public class Weka_Algorithm_For_Prediction {
 							+ ", actual: "
 							+ test.classAttribute().value(
 									(int) test.instance(k).classValue())
-							+ ", actual Train: "
-							+ train.classAttribute().value(
-									(int) train.instance(k).classValue())
 							+ ", predicted: "
 							+ test.classAttribute().value((int) pred));
 		}
@@ -304,7 +323,8 @@ public class Weka_Algorithm_For_Prediction {
 
 		bw_predict.flush();
 		bw_predict.close();
-		Weka_Algorithm.applyWeka_Prediction(final_output);
+
+		Weka_Algorithm.applyWeka_Prediction(filepath_detect, final_output);
 	}
 
 }

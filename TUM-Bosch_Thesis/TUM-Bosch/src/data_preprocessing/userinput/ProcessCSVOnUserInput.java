@@ -2,7 +2,6 @@ package data_preprocessing.userinput;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 
 import data_preprocessing.timestep.TimeStepConversion;
 
@@ -29,8 +28,8 @@ public class ProcessCSVOnUserInput {
 		System.out.println();
 		System.out.print("Select the options seperated by comma ex.(1,2,3): ");
 
-		BufferedReader input = new BufferedReader(new InputStreamReader(
-				System.in));
+		// BufferedReader input = new BufferedReader(new InputStreamReader(
+		// System.in));
 		System.out.println();
 		// String tmp = input.readLine();
 		int sel_l = 0;

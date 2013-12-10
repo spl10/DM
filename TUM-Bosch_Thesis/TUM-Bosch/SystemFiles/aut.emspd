@@ -1,0 +1,4 @@
+DHW_Actual_Temperature	DT233	I1-2	F0.1	UC
+DHW_setpoint	DT233	I0	F1	UC
+DT00209_0-1Outdoor_temperature_measured_value	DT209	I0-1	F0.1	UC
+DT00004_11.1Fluegas_sensor_present_	DT4	I11.1	F1
