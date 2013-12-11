@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import model_class.WEKAInputFiles;
+import descriptive_model.Weka_Algorithm;
 
 public class AddResultsToDetection {
 	/**
@@ -23,10 +24,13 @@ public class AddResultsToDetection {
 	 * @param dates
 	 * @param li_dsm
 	 * @param detection_filepath
+	 * @param file_act
+	 * @param timestep
 	 * @throws Exception
 	 */
-	public static WEKAInputFiles DetectionModel(String[] dates,
-			List<String> li_dsm, String detection_filepath) throws Exception {
+	public static void DetectionModel(String[] dates, List<String> li_dsm,
+			String detection_filepath, int timestep, String file_act)
+			throws Exception {
 		// To check for empty file, to write the header to the file.
 		Boolean emptyFile = false;
 		File f = new File(detection_filepath);
@@ -35,57 +39,110 @@ public class AddResultsToDetection {
 		// the detection_filepath.
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				detection_filepath, true));
-
+		BufferedReader config = new BufferedReader(new FileReader(
+				"thesis.config"));
+		String line_c = null;
+		String fp = null;
+		while ((line_c = config.readLine()) != null) {
+			if (line_c.contains("Location:")) {
+				fp = line_c.split("n:")[1].trim();
+			}
+		}
+		config.close();
 		// List of previously available detection data.
 		List<String> actual_files = new ArrayList<String>();
 
 		if (f.length() == 0) {
-			System.out.println("Empty File");
+			// System.out.println("Empty File");
 			emptyFile = true;
 		}
-		String date_for_prediction = dateSelectedByUser(dates);
-		List<String> date = TrimDateArray(date_for_prediction, dates);
-		String[] new_dates = new String[date.size()];
-		date.toArray(new_dates);
-		System.out.println("New Dates: " + date);
+		for (int j = 0; j < dates.length; j++) {
+			String date_for_prediction = dates[j]; // dateSelectedByUser(dates);
 
-		for (int i = li_dsm.size(); i > 0; i--) {
-			String filepath = li_dsm.get(i - 1);
-			filepath = filepath.split("\\.")[0] + "_Actual.csv";
-			actual_files.add(filepath);
-			System.out.println(filepath);
-			String line = "";
-			BufferedReader br = new BufferedReader(new FileReader(filepath));
+			List<String> date = TrimDateArray(date_for_prediction, dates);
+			String[] new_dates = new String[date.size()];
+			date.toArray(new_dates);
+			// System.out.println("New Dates: " + date);
 
-			/*
-			 * If the file is empty, the header line is written into the
-			 * detection file along with the content from the first month in the
-			 * gateway.
-			 */
-			if (emptyFile) {
-				while ((line = br.readLine()) != null) {
-					bw.write(line + "\n");
+			for (int i = li_dsm.size(); i > 0; i--) {
+				String filepath = li_dsm.get(i - 1);
+				filepath = filepath.split("\\.")[0] + "_Actual.csv";
+				actual_files.add(filepath);
+				// System.out.println(filepath);
+				String line = "";
+				BufferedReader br = new BufferedReader(new FileReader(filepath));
+
+				/*
+				 * If the file is empty, the header line is written into the
+				 * detection file along with the content from the first month in
+				 * the gateway.
+				 */
+				if (emptyFile) {
+					while ((line = br.readLine()) != null) {
+						bw.write(line + "\n");
+					}
+					emptyFile = false;
+					bw.flush();
+					bw.close();
+				} else {
+					br.close();
+
+					// Checks whether the content of filepath is already
+					// available,
+					// if not writes the content into the filepath.
+					preventRewriting_days(new_dates, detection_filepath,
+							filepath);
+
+					// Creates prediction file for the last date in the last
+					// month
+					// in the list of files.
+					if (i == 1)
+						wif.setPrediction_filepath(createPredictionFile(
+								filepath, new_dates));
+
 				}
-				emptyFile = false;
-				bw.flush();
-				bw.close();
-			} else {
 				br.close();
-
-				// Checks whether the content of filepath is already available,
-				// if not writes the content into the filepath.
-				preventRewriting_days(new_dates, detection_filepath, filepath);
-
-				// Creates prediction file for the last date in the last month
-				// in the list of files.
-				if (i == 1)
-					wif.setPrediction_filepath(createPredictionFile(filepath,
-							new_dates));
-
 			}
-			br.close();
+			wif.setDetection_filepath(detection_filepath);
+			// System.out.println(detection_filepath);
+			String file = wif.getDetection_filepath().substring(0,
+					wif.getDetection_filepath().indexOf("."))
+					+ ".arff";
+			f = new File(file);
+			if (f.exists()) {
+				f.delete();
+			}
+			if (j == 0)
+				file = Weka_Algorithm.applyWeka(wif.getDetection_filepath());
+			BufferedWriter output = new BufferedWriter(new FileWriter(fp
+					+ "\\output.csv", true));
+			output.write(f.getName().split("_")[1] + "," + "Decision Table,"
+					+ date_for_prediction + ",");
+			output.flush();
+			output.close();
+			// System.out.println("\n" + wif.getPrediction_filepath() + "\n");
+			Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
+					wif.getPrediction_filepath(), timestep, 1);
+			output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
+					true));
+			output.write(f.getName().split("_")[1] + "," + "Random Forest,"
+					+ date_for_prediction + ",");
+			output.flush();
+			output.close();
+			// System.out.println("\n" + wif.getPrediction_filepath() + "\n");
+			Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
+					wif.getPrediction_filepath(), timestep, 2);
+			output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
+					true));
+			output.write(f.getName().split("_")[1] + "," + "Bagging,"
+					+ date_for_prediction + ",");
+			output.flush();
+			output.close();
+			// System.out.println("\n" + wif.getPrediction_filepath() + "\n");
+			Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
+					wif.getPrediction_filepath(), timestep, 3);
+
 		}
-		return wif;
 	}
 
 	/**
@@ -176,6 +233,7 @@ public class AddResultsToDetection {
 				i++;
 			}
 		}
+		bw.flush();
 		bw.close();
 		br.close();
 		return prediction_filepath;
@@ -231,7 +289,8 @@ public class AddResultsToDetection {
 	public static String[] findMissingDates(String detection_filepath,
 			String filepath) throws Exception {
 		Set<String> dates = collectUniqueDatesFromFile(filepath);
-		System.out.println("size: " + dates.size() + " unique dates: " + dates);
+		// System.out.println("size: " + dates.size() + " unique dates: " +
+		// dates);
 		String missing_dates[] = new String[dates.size()];
 		BufferedReader bw_br = new BufferedReader(new FileReader(
 				detection_filepath));

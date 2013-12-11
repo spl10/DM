@@ -2,7 +2,6 @@ package predictive_model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -13,8 +12,8 @@ import descriptive_model.Weka_Algorithm;
 
 public class Probablistic_Model {
 	public static void algorithm(String Actual_filepath,
-			String detection_filepath, String prediction_filepath, int timestep)
-			throws Exception {
+			String detection_filepath, String prediction_filepath,
+			int timestep, int algorithm) throws Exception {
 		BufferedReader br_detect = new BufferedReader(new FileReader(
 				detection_filepath));
 		BufferedReader br_predict = new BufferedReader(new FileReader(
@@ -25,18 +24,16 @@ public class Probablistic_Model {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(predict_final));
 		String[] label = new String[24 * (60 / timestep)];
 		List<String> labels = null;
-		String month = null;
 		String line_d = br_detect.readLine();
 		String line_p = br_predict.readLine();
 		bw.write(line_p + "\n");
 		int i = 0;
-		while ((line_p = br_predict.readLine()) != null) {
+		while ((line_p = br_predict.readLine()) != null && i < label.length) {
 			br_detect = new BufferedReader(new FileReader(detection_filepath));
 			labels = new ArrayList<String>();
 			int count_usage = 0;
 			int count_nousage = 0;
 			while ((line_d = br_detect.readLine()) != null) {
-				month = line_p.split(",")[0].split("\\.")[1];
 				String time_d = line_d.split(",")[1];
 				String time_p = line_p.split(",")[1];
 				String day_d = line_d.split(",")[2];
@@ -46,7 +43,8 @@ public class Probablistic_Model {
 				}
 			}
 			br_detect.close();
-			System.out.println("size: " + labels.size() + " labels: " + labels);
+			// System.out.println("size: " + labels.size() + " labels: " +
+			// labels);
 			Iterator<String> it = labels.listIterator();
 			while (it.hasNext()) {
 				String label_d = it.next();
@@ -65,26 +63,25 @@ public class Probablistic_Model {
 			String[] params = line_p.split(",");
 			for (int j = 0; j < params.length - 1; j++) {
 				bw.write(params[j] + ",");
-				System.out.print(params[j] + ",");
+				// System.out.print(params[j] + ",");
 			}
 			bw.write(label[i] + "\n");
-			System.out.println(label[i]);
+			// System.out.println(label[i]);
 			i++;
 		}
-		File f = new File(predict_final);
-		String new_path = predict_final.split(month)[0] + month
-				+ "\\probabilistic_model\\" + f.getName();
-		File f_new = new File(new_path);
-		f_new.setExecutable(true, false);
-		System.out.println(new_path);
-		if (f.renameTo(f_new))
-			System.err.println("File Moved Successfully!!!");
-		else
-			System.err.println("File not Moved!!!");
+
 		br_predict.close();
+		bw.flush();
 		bw.close();
-		Weka_Algorithm.applyWeka_Prediction(Actual_filepath, predict_final);
-		Weka_Algorithm.applyWeka_Prediction(detection_filepath, predict_final);
+		// Weka_Algorithm.applyWeka_Prediction(Actual_filepath, predict_final);
+		if (algorithm == 1)
+			Weka_Algorithm.applyWeka_DecisionTable(detection_filepath,
+					predict_final);
+		else if (algorithm == 2)
+			Weka_Algorithm.applyWeka_RandomForest(detection_filepath,
+					predict_final);
+		else if (algorithm == 3)
+			Weka_Algorithm.applyWeka_Bagging(detection_filepath, predict_final);
 	}
 
 	public static int calculateThreshold(int count_usage, int count_nousage) {

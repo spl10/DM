@@ -1,0 +1,15 @@
+DT00233_1-2DHW_Actual_Temperature	DT233	I1-2	F0.1	U?C
+DT00233_0DHW_setpoint	DT233	I0	F1	U?C
+DT00209_0-1Outdoor_temperature_measured_value	DT209	I0-1	F-0.1	U?C
+DT00233_3-4DHW_cylinder_temperature	DT233	I3-4	F0.1	U?C
+DT00048_0-1mains_voltage	DT48	I0-1	F0.1	U?V
+DT00227_0.0Operation_State_Source__HEAT	DT227	I0.0	F1	Ubool
+DT00227_0.2Operation_State_Source__IDLE	DT227	I0.2	F1	Ubool
+DT00227_13System_Power	DT227	I13	F1	U%
+DT00228_23-24Appliance_Supply_Temperature	DT228	I23-24	F0.1	U?
+DT00022_0CH_switch_on_off	DT22	I0	F1	Uenum
+DT00231_0Circulation_pump_request	DT231	I0	F1	Uenum
+DT00233_17-19Number_of_starts_DHW	DT233	I17-19	F1
+DT00233_14-16Total_working_time_DHW	DT233	I14-16	F1	Uminutes
+DT00233_13.2DHW_status_info_2__Circulation_Pump_is_running	DT233	I13.2	F1	Uenum
+DT00233_12.6DHW_status_info_1___free	DT233	I12.6	F1	Uenum

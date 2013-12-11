@@ -1,6 +1,8 @@
 package predictive_model;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,6 @@ import java.util.ListIterator;
 
 import model_class.CalculateFilePath;
 import model_class.ListFiles;
-import model_class.WEKAInputFiles;
 import data_preprocessing.userinput.ProcessCSVOnUserInput;
 import data_preprocessing.userinput.UserInput;
 
@@ -30,16 +31,26 @@ public class User_Input_For_Prediction extends UserInput {
 				+ "2.Learn from past two months. \n"
 				+ "3.Learn from past six months. \n"
 				+ "4.Learn from the whole year.");
-		System.out.print("Select any one option (Default Option is 4): ");
 		// BufferedReader input = new BufferedReader(new InputStreamReader(
 		// System.in));
 		// String inp = input.readLine();
-		String inp = "4";
+
+		String inp = null;
+		BufferedReader config = new BufferedReader(new FileReader(
+				"thesis.config"));
+		String line_c = null;
+		while ((line_c = config.readLine()) != null) {
+			if (line_c.contains("Learning:")) {
+				inp = line_c.split("g:")[1].trim();
+			}
+		}
+		config.close();
+		System.err.println("Selected option is: " + inp);
 		return inp;
 	}
 
-	public static WEKAInputFiles userInput(String[] date, String filepath,
-			int timestep) throws Exception {
+	public static void userInput(String[] date, String filepath, int timestep,
+			String file_act) throws Exception {
 		// Prints out the option.
 		String inp = options();
 		// To control the while loop when invalid path is found.
@@ -54,22 +65,34 @@ public class User_Input_For_Prediction extends UserInput {
 		if (inp.isEmpty()) { // set default input
 			inp = "4";
 		}
+		String config_month = null;
+		String config_year = null;
+		BufferedReader config = new BufferedReader(new FileReader(
+				"thesis.config"));
+		String line_c = null;
+		while ((line_c = config.readLine()) != null) {
+			if (line_c.contains("Prediction:")) {
+				config_month = line_c.split("n:")[1].trim().split("\\.")[0];
+				config_year = line_c.split("n:")[1].trim().split("\\.")[1];
+			}
+		}
+		config.close();
 		// To get the date, month and year in an array.
 		String[] dt = date[date.length - 1].split("\\.");
 
-		if (Integer.parseInt(dt[1]) < 3 && inp.equals("2")) {
+		if (Integer.parseInt(config_month) < 3 && inp.equals("2")) {
 			System.err
 					.println("Past two months not available in the year.Please Select Other Options.");
-			inp = options();
-		} else if (Integer.parseInt(dt[1]) < 6 && inp.equals("3")) {
+			System.exit(0);
+		} else if (Integer.parseInt(config_month) < 6 && inp.equals("3")) {
 			System.err
 					.println("Past six months not available in the year.Please Select Other Options.");
-			inp = options();
+			System.exit(0);
 		} else if (!(inp.equals("1") || inp.equals("2") || inp.equals("3") || inp
 				.equals("4"))) {
 			System.err
 					.println("Please Select only one valid option from the list ex. 2.");
-			inp = options();
+			System.exit(0);
 		}
 
 		// Restrict the list size for option 1, 2 and 3
@@ -82,13 +105,12 @@ public class User_Input_For_Prediction extends UserInput {
 		} else if (inp.equals("3")) {
 			size = 6;
 		}
-
 		// Gets the path of the current file which is processed now.
 		File f = new File(filepath);
 
 		// Gets the unique name for dsm files.
 		String dsm_suffix = f.getName().split(parseMonthInt(dt[1]))[1];
-		String fyear = dt[2];
+		String fyear = "20" + config_year;
 		String detection_filepath = f.getAbsolutePath().split(fyear + "\\\\")[0]
 				+ f.getName().split(parseMonthInt(dt[1]))[0] + "Actual.csv";
 		f = new File(detection_filepath);
@@ -102,7 +124,7 @@ public class User_Input_For_Prediction extends UserInput {
 		 */
 		String dsm_path = filepath;
 		loop: while (ff) {
-			li_dsm.add(dsm_path);
+
 			f = new File(filepath);
 			String fmonth = f.getName().split("_")[2].substring(0, 3);
 			fyear = dt[2];
@@ -116,7 +138,22 @@ public class User_Input_For_Prediction extends UserInput {
 
 			// Gets the value of path in an array split on slash /.
 			String[] path = f.getPath().split("\\\\");
-
+			System.out.println("START inp: " + inp + " month: " + fmonth
+					+ " mnt folder: " + path[path.length - 2]
+					+ " rest_folders: " + rest_folders + " filename[0]: "
+					+ filename[0] + " fmonth: " + parseMonthInt(fmonth)
+					+ " fyear: " + fyear
+					+ " filename[1].split(_)[0].split(.)[0] : "
+					+ filename[1].split("_")[0].split("\\.")[0]
+					+ "\ntemp_path: " + temp_path + " \ndsm_path: " + dsm_path
+					+ "\nconfig_year: " + config_year + " config_month: "
+					+ config_month);
+			if ((Integer.parseInt(fmonth) <= Integer.parseInt(config_month))
+					|| (Integer
+							.parseInt(filename[1].split("_")[0].split("\\.")[0]) < Integer
+							.parseInt(config_year))) {
+				li_dsm.add(dsm_path);
+			}
 			int i = 2; // omitting the file name in the filepath.
 
 			/*
@@ -145,15 +182,6 @@ public class User_Input_For_Prediction extends UserInput {
 				i++;
 			}
 
-			System.out.println("inp: " + inp + " month: " + fmonth
-					+ " mnt folder: " + path[path.length - 2]
-					+ " rest_folders: " + rest_folders + " filename[0]: "
-					+ filename[0] + " fmonth: " + parseMonthInt(fmonth)
-					+ " filename[1]: " + filename[1]
-					+ "filename[1].split(_)[0].split(.)[0] : "
-					+ filename[1].split("_")[0].split("\\.")[0]
-					+ "\ntemp_path: " + temp_path + " \ndsm_path: " + dsm_path);
-
 			File dsm_f = new File(dsm_path);
 			if (!dsm_f.exists()) {
 				f = new File(temp_path);
@@ -178,7 +206,13 @@ public class User_Input_For_Prediction extends UserInput {
 					}
 				}
 			}
-			li.add(filepath);
+			if (((Integer.parseInt(fmonth)) <= Integer.parseInt(config_month))
+					|| (Integer
+							.parseInt(filename[1].split("_")[0].split("\\.")[0]) < Integer
+							.parseInt(config_year))) {
+				li.add(filepath);
+			}
+
 			filepath = temp_path;
 
 			if ((inp.equals("1") || inp.equals("2") || inp.equals("3"))
@@ -214,11 +248,9 @@ public class User_Input_For_Prediction extends UserInput {
 		System.out.println("created_files_count: "
 				+ ui.getCreated_files_count());
 
-		WEKAInputFiles wif = AddResultsToDetection.DetectionModel(date,
-				first_li_dsm, detection_filepath);
-		wif.setDetection_filepath(detection_filepath);
-		System.out.println(detection_filepath);
-		return wif;
+		AddResultsToDetection.DetectionModel(date, first_li_dsm,
+				detection_filepath, timestep, file_act);
+
 	}
 
 	/**

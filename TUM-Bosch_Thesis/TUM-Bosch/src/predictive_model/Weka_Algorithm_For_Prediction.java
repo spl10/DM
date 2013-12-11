@@ -35,8 +35,8 @@ public class Weka_Algorithm_For_Prediction {
 		train.setClassIndex(train.numAttributes() - 1);
 		test.setClassIndex(test.numAttributes() - 1);
 
-		RandomForest rt = new RandomForest();
-		rt.setSeed(1);
+		RandomForest rf = new RandomForest();
+		rf.setSeed(1);
 
 		String[] options = new String[2];
 		options[0] = "-R";
@@ -51,7 +51,7 @@ public class Weka_Algorithm_For_Prediction {
 		classifier.setTrim(true);
 		classifier.setIgnoreCaseForNames(true);
 		classifier.constructMappedInstance(test.get(0));
-		classifier.setClassifier(rt);
+		classifier.setClassifier(rf);
 		classifier.buildClassifier(newTrain);
 
 		System.out
@@ -82,7 +82,7 @@ public class Weka_Algorithm_For_Prediction {
 		// Double[][][] param = prediction.getParam();
 		System.out.println(test.numInstances());
 		for (int i = 0; i < test.numInstances(); i++) {
-			double pred = rt.classifyInstance(test.instance(i));
+			double pred = rf.classifyInstance(test.instance(i));
 			System.out.print("ID: " + test.instance(i).value(1));
 			System.out.print(",time: "
 					+ time[i]
@@ -119,7 +119,7 @@ public class Weka_Algorithm_For_Prediction {
 		br.close();
 		bw_predict.flush();
 		bw_predict.close();
-		Weka_Algorithm.applyWeka_Prediction(filepath_detect, final_output);
+		Weka_Algorithm.applyWeka_DecisionTable(filepath_detect, final_output);
 	}
 
 	public static void dailyBasisFiles(String filepath_detect,
@@ -258,8 +258,8 @@ public class Weka_Algorithm_For_Prediction {
 		train.setClassIndex(train.numAttributes() - 1);
 		test.setClassIndex(test.numAttributes() - 1);
 
-		RandomForest rt = new RandomForest();
-		rt.setSeed(1);
+		RandomForest rf = new RandomForest();
+		rf.setSeed(1);
 
 		String[] options = new String[2];
 		options[0] = "-R";
@@ -274,7 +274,7 @@ public class Weka_Algorithm_For_Prediction {
 		classifier.setTrim(true);
 		classifier.setIgnoreCaseForNames(true);
 		classifier.constructMappedInstance(test.get(0));
-		classifier.setClassifier(rt);
+		classifier.setClassifier(rf);
 		classifier.buildClassifier(newTrain);
 
 		String final_output = filepath_predict.substring(0,
@@ -324,7 +324,7 @@ public class Weka_Algorithm_For_Prediction {
 		bw_predict.flush();
 		bw_predict.close();
 
-		Weka_Algorithm.applyWeka_Prediction(filepath_detect, final_output);
+		Weka_Algorithm.applyWeka_DecisionTable(filepath_detect, final_output);
 	}
 
 }

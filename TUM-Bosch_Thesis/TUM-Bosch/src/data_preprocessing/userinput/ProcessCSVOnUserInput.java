@@ -26,16 +26,14 @@ public class ProcessCSVOnUserInput {
 			}
 		}
 		System.out.println();
-		System.out.print("Select the options seperated by comma ex.(1,2,3): ");
 
 		// BufferedReader input = new BufferedReader(new InputStreamReader(
 		// System.in));
-		System.out.println();
+
 		// String tmp = input.readLine();
 		int sel_l = 0;
 		String[] selectedParameters = new String[1];
 		int[] selection = new int[sel_l];
-		System.out.println();
 		// if (tmp.contains(",")) {
 		// sel_l = tmp.split(",").length;
 		// selection = new int[sel_l];
@@ -59,11 +57,20 @@ public class ProcessCSVOnUserInput {
 		// + selectedParameters[0]);
 		//
 		// } else {
-		String tmp = "1,2,3,11,12";
+		String tmp = null;
+		BufferedReader config = new BufferedReader(new FileReader(
+				"thesis.config"));
+		String line_c = null;
+		while ((line_c = config.readLine()) != null) {
+			if (line_c.contains("Parameters:")) {
+				tmp = line_c.split("s:")[1].trim();
+			}
+		}
+		config.close();
+		System.err.println("Selected options are: " + tmp);
 		sel_l = tmp.split(",").length;
 		selection = new int[sel_l];
 		selectedParameters = new String[sel_l];
-		System.out.println("The selected options are ");
 		for (int i = 0; i < sel_l; i++) {
 			selection[i] = Integer.parseInt(tmp.split(",")[i]);
 			if (selection[i] < (Parameters.length - 1)) {
@@ -83,14 +90,9 @@ public class ProcessCSVOnUserInput {
 		csv.close();
 		System.out.println("Length of the CSV file: " + l);
 
-		final long startTime = System.nanoTime();
-
 		/* Convert for time-step */
 		TimeStepConversion.convertForTimeStep(filepath, timestep, l, selection,
 				selectedParameters);
 
-		final double duration = System.nanoTime() - startTime;
-		System.out
-				.println("Total Duration : " + duration / 1000000000 + " sec");
 	}
 }

@@ -2,7 +2,6 @@ package descriptive_model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Comparator;
@@ -14,11 +13,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import model_class.Prediction;
-import model_class.WEKAInputFiles;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 
-import predictive_model.Probablistic_Model;
 import predictive_model.User_Input_For_Prediction;
 
 /* Label is calculated based on the parameters 
@@ -200,21 +197,21 @@ public class LabelCalculation {
 		bw_actual.flush();
 		bw_actual.close();
 		br.close();
-		WEKAInputFiles wif = User_Input_For_Prediction.userInput(dates,
-				filepath, timestep);
+		User_Input_For_Prediction
+				.userInput(dates, filepath, timestep, file_act);
 		System.out.println(file_predict);
-		String file = wif.getDetection_filepath().substring(0,
-				wif.getDetection_filepath().indexOf("."))
-				+ ".arff";
-		File f = new File(file);
-		if (f.exists()) {
-			f.delete();
-		}
-		file = Weka_Algorithm.applyWeka(wif.getDetection_filepath());
-
-		System.out.println("\n" + wif.getPrediction_filepath() + "\n");
-		Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
-				wif.getPrediction_filepath(), timestep);
+		// String file = wif.getDetection_filepath().substring(0,
+		// wif.getDetection_filepath().indexOf("."))
+		// + ".arff";
+		// File f = new File(file);
+		// if (f.exists()) {
+		// f.delete();
+		// }
+		// file = Weka_Algorithm.applyWeka(wif.getDetection_filepath());
+		//
+		// System.out.println("\n" + wif.getPrediction_filepath() + "\n");
+		// Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
+		// wif.getPrediction_filepath(), timestep);
 		// Weka_Algorithm_For_Prediction.applyWeka(file,
 		// wif.getPrediction_filepath(), prediction, names);
 		// Weka_Algorithm_For_Prediction.dailyBasisFiles(file, file_predict,
