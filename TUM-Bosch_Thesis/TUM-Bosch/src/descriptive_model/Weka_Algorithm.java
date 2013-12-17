@@ -109,25 +109,31 @@ public class Weka_Algorithm {
 				"thesis.config"));
 		String line_c = null;
 		String fp = null;
+		int timestep = 0;
 		while ((line_c = config.readLine()) != null) {
 			if (line_c.contains("Location:")) {
 				fp = line_c.split("n:")[1].trim();
+			}
+			if (line_c.contains("Timestep:")) {
+				timestep = Integer.parseInt(line_c.split(":")[1].trim());
 			}
 		}
 		config.close();
 		BufferedWriter output = new BufferedWriter(new FileWriter(fp
 				+ "\\output.csv", true));
 
-		output.write(Math.round((evaluation.pctCorrect() * 100) / 100) + ","
-				+ evaluation.numFalsePositives(0) + "\n");
+		output.write(Math.round((evaluation.pctCorrect() * 100) / 100)
+				+ ","
+				+ Math.round((((evaluation.numFalsePositives(0) / (24 * (60 / timestep))) * 100) * 100) / 100)
+				+ "\n");
 		output.flush();
 		output.close();
-		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
-				false));
-
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
-		System.out.println(evaluation.toSummaryString());
+		// System.out.println(evaluation.toSummaryString("\nResults\n======\n",
+		// false));
+		//
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toSummaryString());
 		System.out.println(evaluation.toMatrixString());
 	}
 
@@ -174,25 +180,31 @@ public class Weka_Algorithm {
 				"thesis.config"));
 		String line_c = null;
 		String fp = null;
+		int timestep = 0;
 		while ((line_c = config.readLine()) != null) {
 			if (line_c.contains("Location:")) {
 				fp = line_c.split("n:")[1].trim();
+			}
+			if (line_c.contains("Timestep:")) {
+				timestep = Integer.parseInt(line_c.split(":")[1].trim());
 			}
 		}
 		config.close();
 		BufferedWriter output = new BufferedWriter(new FileWriter(fp
 				+ "\\output.csv", true));
 
-		output.write(Math.round((evaluation.pctCorrect() * 100) / 100) + ","
-				+ evaluation.numFalsePositives(0) + "\n");
+		output.write(Math.round((evaluation.pctCorrect() * 100) / 100)
+				+ ","
+				+ Math.round((((evaluation.numFalsePositives(0) / (24 * (60 / timestep))) * 100) * 100) / 100)
+				+ "\n");
 		output.flush();
 		output.close();
-		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
-				false));
+		// System.out.println(evaluation.toSummaryString("\nResults\n======\n",
+		// false));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
-		System.out.println(evaluation.toSummaryString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toSummaryString());
 		System.out.println(evaluation.toMatrixString());
 	}
 
@@ -250,25 +262,31 @@ public class Weka_Algorithm {
 				"thesis.config"));
 		String line_c = null;
 		String fp = null;
+		int timestep = 0;
 		while ((line_c = config.readLine()) != null) {
 			if (line_c.contains("Location:")) {
 				fp = line_c.split("n:")[1].trim();
+			}
+			if (line_c.contains("Timestep:")) {
+				timestep = Integer.parseInt(line_c.split(":")[1].trim());
 			}
 		}
 		config.close();
 		BufferedWriter output = new BufferedWriter(new FileWriter(fp
 				+ "\\output.csv", true));
 
-		output.write(Math.round((evaluation.pctCorrect() * 100) / 100) + ","
-				+ evaluation.numFalsePositives(0) + "\n");
+		output.write(Math.round((evaluation.pctCorrect() * 100) / 100)
+				+ ","
+				+ Math.round((((evaluation.numFalsePositives(0) / (24 * (60 / timestep))) * 100) * 100) / 100)
+				+ "\n");
 		output.flush();
 		output.close();
-		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
-				false));
-
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
-		System.out.println(evaluation.toSummaryString());
+		// System.out.println(evaluation.toSummaryString("\nResults\n======\n",
+		// false));
+		//
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toSummaryString());
 		System.out.println(evaluation.toMatrixString());
 	}
 }

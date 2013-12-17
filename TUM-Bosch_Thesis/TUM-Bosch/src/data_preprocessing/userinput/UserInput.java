@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import predictive_model.User_Input_For_Prediction;
+
 /**
  * @author SIP2LOL
  * 
@@ -65,50 +67,64 @@ public class UserInput {
 						File[] months = years[j].listFiles();
 						for (int k = months.length - 1; k >= 0; k--) {
 							if (months[k].isDirectory()
-									&& (Integer.parseInt(months[k].getName()) <= Integer
-											.parseInt(config_month) || (Integer
-											.parseInt(years[j].getName()) <= Integer
-											.parseInt(config_year)))) {
+									&& ((Integer.parseInt(months[k].getName()) <= Integer
+											.parseInt(config_month) && (Integer
+											.parseInt(years[j].getName()) == Integer
+											.parseInt(config_year))) || ((Integer
+											.parseInt(years[j].getName()) < Integer
+											.parseInt(config_year))))) {
 								filepath = months[k].getPath() + "\\output\\";
+
 								File dir = new File(filepath);
-								filepath = dir.listFiles()[0].getAbsolutePath();
+								if (!dir.exists()) {
+									dir.mkdir();
+									filepath = filepath
+											+ "out_gt"
+											+ gateways[i].getName().split("_")[1]
+											+ "_"
+											+ User_Input_For_Prediction
+													.parseMonthInt(months[k]
+															.getName())
+											+ years[j].getName() + ".csv";
+									f = new File(filepath);
+									f.createNewFile();
+									ems.convertBinaryToCSV(filepath);
+								} else {
+									filepath = dir.getPath()
+											+ "\\out_gt"
+											+ gateways[i].getName().split("_")[1]
+											+ "_"
+											+ User_Input_For_Prediction
+													.parseMonthInt(months[k]
+															.getName())
+											+ years[j].getName() + ".csv";
+									f = new File(filepath);
+									if (!f.exists()) {
+										f.createNewFile();
+										ems.convertBinaryToCSV(dir.getPath());
+									}
+								}
 								break gateway;
 							}
 						}
 					}
 				}
-				f = new File(filepath);
-				if (!f.exists()) {
-					f = new File(filepath.substring(0,
-							filepath.lastIndexOf("\\")));
-					if (!f.exists()) {
-						f.mkdir();
-					}
-					ems.convertBinaryToCSV(filepath);
-					f = new File(filepath);
-					while (!f.exists()) {
-						Thread.sleep(100);
-					}
-				}
 				String dir = filepath.substring(0, filepath.lastIndexOf("\\"));
-				String file = filepath
-						.substring(filepath.lastIndexOf("\\") + 1);
+				f = new File(filepath);
 				File Dir = new File(dir);
 				if (Dir.isDirectory()) {
 					File[] li = Dir.listFiles();
 					int l = 0;
 					while (l < li.length) {
-						if (!li[l].getName().equals(file)) {
+						if (!li[l].getName().equals(f.getName())) {
 							li[l].delete();
 						}
 						l++;
 					}
 				}
-
-				System.out.println();
-				ProcessCSVOnUserInput.userInputProcessing(filepath, timestep);
 			}
 		}
+		ProcessCSVOnUserInput.userInputProcessing(filepath, timestep);
 		final double duration = (System.nanoTime() - startTime) / 1000000000;
 		System.out.println("Total Duration : " + duration / 60 + " min");
 	}

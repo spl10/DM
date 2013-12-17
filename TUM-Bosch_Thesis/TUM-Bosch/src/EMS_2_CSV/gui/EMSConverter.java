@@ -41,9 +41,11 @@ public class EMSConverter {
 		File[] bin = Dir.listFiles();
 		List<String> bin_li = new ArrayList<String>();
 		for (int i = 0; i < bin.length - 2; i++) {
-			String first = bin[i].getName().split("\\.")[1];
-			if (first.equals("bin")) {
-				bin_li.add(bin[i].getAbsolutePath());
+			if (bin[i].isFile()) {
+				String first = bin[i].getName().split("\\.")[1];
+				if (first.equals("bin")) {
+					bin_li.add(bin[i].getAbsolutePath());
+				}
 			}
 		}
 		return bin_li;

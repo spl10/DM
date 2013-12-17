@@ -3,7 +3,6 @@ package predictive_model;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -18,41 +17,149 @@ import data_preprocessing.userinput.UserInput;
  * 
  */
 public class User_Input_For_Prediction extends UserInput {
+	public static void userInput(String[] date, String filepath, int timestep,
+			String file_act) throws Exception {
+		File f = new File(filepath);
+		String filename = f.getName();
+		String location = null;
+		String detection_filepath = null;
 
-	/**
-	 * Information is processed for prediction based on user input.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public static String options() throws IOException {
-		System.out.println("Learning Strategies: ");
-		System.out.println("1.Learn from current month. \n"
-				+ "2.Learn from past two months. \n"
-				+ "3.Learn from past six months. \n"
-				+ "4.Learn from the whole year.");
-		// BufferedReader input = new BufferedReader(new InputStreamReader(
-		// System.in));
-		// String inp = input.readLine();
-
-		String inp = null;
 		BufferedReader config = new BufferedReader(new FileReader(
 				"thesis.config"));
 		String line_c = null;
+		String config_month = null;
+		String config_year = null;
 		while ((line_c = config.readLine()) != null) {
-			if (line_c.contains("Learning:")) {
-				inp = line_c.split("g:")[1].trim();
+			if (line_c.contains("Location:")) {
+				location = line_c.split("n:")[1].trim();
+			}
+			if (line_c.contains("Prediction:")) {
+				config_month = line_c.split("n:")[1].trim().split("\\.")[0];
+				config_year = line_c.split("n:")[1].trim().split("\\.")[1];
 			}
 		}
 		config.close();
-		System.err.println("Selected option is: " + inp);
-		return inp;
+		String file_suffix = filename.split(date[0].split("\\.")[2])[1];
+		f = new File(location);
+		File[] gateways = f.listFiles();
+		for (int i = gateways.length - 1; i >= 0; i--) {
+			if (gateways[i].isDirectory()) {
+				// List of dsm files.
+				List<String> li_dsm = new ArrayList<String>();
+				// List of main file from the EMS converter.
+				List<String> li = new ArrayList<String>();
+				ListFiles lf = new ListFiles();
+
+				detection_filepath = location + "\\" + gateways[i].getName()
+						+ "\\out_gt" + gateways[i].getName().split("_")[1]
+						+ "_Actual.csv";
+				f = new File(detection_filepath);
+				if (f.exists()) {
+					f.delete();
+				}
+				f.createNewFile();
+				File[] years = gateways[i].listFiles();
+				for (int j = years.length - 1; j >= 0; j--) {
+					if (years[j].isDirectory()) {
+						File[] months = years[j].listFiles();
+						for (int k = months.length - 1; k >= 0; k--) {
+							int ff = 0;
+							if (months[k].isDirectory()
+									&& ((Integer.parseInt(months[k].getName()) <= Integer
+											.parseInt(config_month) && (Integer
+											.parseInt(years[j].getName()) == Integer
+											.parseInt(config_year))) || ((Integer
+											.parseInt(years[j].getName()) < Integer
+											.parseInt(config_year))))) {
+								File[] output = months[k].listFiles();
+								for (int l = output.length - 1; l >= 0; l--) {
+									if (output[l].isDirectory()
+											&& output[l].getName().contains(
+													"output")) {
+										File[] core_files = output[l]
+												.listFiles();
+										if (core_files.length > 0) {
+											li.add(core_files[0]
+													.getAbsolutePath());
+											for (int m = core_files.length - 1; m >= 0; m--) {
+												if (core_files[m].getName()
+														.contains(file_suffix)) {
+													li_dsm.add(core_files[m]
+															.getAbsolutePath());
+													ff++;
+												}
+											}
+										} else {
+											String rest_folder = output[l]
+													.getPath()
+													+ "\\out_gt"
+													+ gateways[i].getName()
+															.split("_")[1]
+													+ "_"
+													+ User_Input_For_Prediction
+															.parseMonthInt(months[k]
+																	.getName())
+													+ years[j].getName()
+													+ ".csv";
+											li.add(rest_folder);
+											f = new File(rest_folder);
+											rest_folder = f.getPath().split(
+													"\\.")[0]
+													+ file_suffix;
+											li_dsm.add(rest_folder);
+
+										}
+									}
+								}
+								if (ff == 0) {
+									String rest_folder = months[k].getPath()
+											+ "\\output\\";
+									File dir = new File(rest_folder);
+									if (!dir.exists()) {
+										dir.mkdir();
+										rest_folder = rest_folder
+												+ "out_gt"
+												+ gateways[i].getName().split(
+														"_")[1]
+												+ "_"
+												+ User_Input_For_Prediction
+														.parseMonthInt(months[k]
+																.getName())
+												+ years[j].getName() + ".csv";
+										li.add(rest_folder);
+										f = new File(rest_folder);
+										rest_folder = f.getAbsolutePath()
+												.split("\\.")[0] + file_suffix;
+										li_dsm.add(rest_folder);
+									}
+
+								}
+							}
+						}
+					}
+				}
+
+				lf.setDsm_li(li_dsm);
+				lf.setMain_li(li);
+				ListIterator<String> it = li_dsm.listIterator();
+				while (it.hasNext()) {
+					System.out.println("li_dsm: " + it.next());
+				}
+				// System.out.println();
+				// it = li.listIterator();
+				// while (it.hasNext()) {
+				// System.out.println("main file: " + it.next());
+				// }
+				CreateDsmFiles(lf, timestep);
+				AddResultsToDetection.DetectionModel(date, li_dsm,
+						detection_filepath, timestep, file_act);
+			}
+		}
 	}
 
-	public static void userInput(String[] date, String filepath, int timestep,
+	public static void userInput1(String[] date, String filepath, int timestep,
 			String file_act) throws Exception {
-		// Prints out the option.
-		String inp = options();
+
 		// To control the while loop when invalid path is found.
 		boolean ff = true;
 		UserInput ui = new UserInput();
@@ -61,10 +168,7 @@ public class User_Input_For_Prediction extends UserInput {
 		List<String> first_li_dsm = new ArrayList<String>();
 		// List of main file from the EMS converter.
 		List<String> li = new ArrayList<String>();
-
-		if (inp.isEmpty()) { // set default input
-			inp = "4";
-		}
+		CalculateFilePath cfp = null;
 		String config_month = null;
 		String config_year = null;
 		BufferedReader config = new BufferedReader(new FileReader(
@@ -77,45 +181,26 @@ public class User_Input_For_Prediction extends UserInput {
 			}
 		}
 		config.close();
-		// To get the date, month and year in an array.
-		String[] dt = date[date.length - 1].split("\\.");
-
-		if (Integer.parseInt(config_month) < 3 && inp.equals("2")) {
-			System.err
-					.println("Past two months not available in the year.Please Select Other Options.");
-			System.exit(0);
-		} else if (Integer.parseInt(config_month) < 6 && inp.equals("3")) {
-			System.err
-					.println("Past six months not available in the year.Please Select Other Options.");
-			System.exit(0);
-		} else if (!(inp.equals("1") || inp.equals("2") || inp.equals("3") || inp
-				.equals("4"))) {
-			System.err
-					.println("Please Select only one valid option from the list ex. 2.");
-			System.exit(0);
-		}
-
-		// Restrict the list size for option 1, 2 and 3
-		int size = 0;
-
-		if (inp.equals("1")) {
-			size = 1;
-		} else if (inp.equals("2")) {
-			size = 2;
-		} else if (inp.equals("3")) {
-			size = 6;
-		}
 		// Gets the path of the current file which is processed now.
 		File f = new File(filepath);
-
-		// Gets the unique name for dsm files.
-		String dsm_suffix = f.getName().split(parseMonthInt(dt[1]))[1];
-		String fyear = "20" + config_year;
-		String detection_filepath = f.getAbsolutePath().split(fyear + "\\\\")[0]
-				+ f.getName().split(parseMonthInt(dt[1]))[0] + "Actual.csv";
-		f = new File(detection_filepath);
-		if (f.exists()) {
-			f.delete();
+		// To get the date, month and year in an array.
+		String[] dt = new String[3];
+		String fyear = null;
+		String dsm_suffix = null;
+		String detection_filepath = null;
+		if (date.length != 0 && !date[0].equals("")) {
+			dt = date[date.length - 1].split("\\.");
+			fyear = dt[2];
+			// Gets the unique name for dsm files.
+			dsm_suffix = f.getName().split(parseMonthInt(dt[1]))[1];
+			detection_filepath = f.getAbsolutePath().split(fyear + "\\\\")[0]
+					+ f.getName().split(parseMonthInt(dt[1]))[0] + "Actual.csv";
+		}
+		if (detection_filepath != null) {
+			f = new File(detection_filepath);
+			if (f.exists()) {
+				f.delete();
+			}
 		}
 		System.out.println(dsm_suffix);
 		/*
@@ -123,8 +208,7 @@ public class User_Input_For_Prediction extends UserInput {
 		 * in the gateway.
 		 */
 		String dsm_path = filepath;
-		loop: while (ff) {
-
+		while (ff) {
 			f = new File(filepath);
 			String fmonth = f.getName().split("_")[2].substring(0, 3);
 			fyear = dt[2];
@@ -138,20 +222,21 @@ public class User_Input_For_Prediction extends UserInput {
 
 			// Gets the value of path in an array split on slash /.
 			String[] path = f.getPath().split("\\\\");
-			System.out.println("START inp: " + inp + " month: " + fmonth
-					+ " mnt folder: " + path[path.length - 2]
-					+ " rest_folders: " + rest_folders + " filename[0]: "
-					+ filename[0] + " fmonth: " + parseMonthInt(fmonth)
-					+ " fyear: " + fyear
+			System.out.println("START month: " + fmonth + " mnt folder: "
+					+ path[path.length - 2] + " rest_folders: " + rest_folders
+					+ " filename[0]: " + filename[0] + " fmonth: "
+					+ parseMonthInt(fmonth) + " fyear: " + fyear
 					+ " filename[1].split(_)[0].split(.)[0] : "
 					+ filename[1].split("_")[0].split("\\.")[0]
 					+ "\ntemp_path: " + temp_path + " \ndsm_path: " + dsm_path
 					+ "\nconfig_year: " + config_year + " config_month: "
 					+ config_month);
-			if ((Integer.parseInt(fmonth) <= Integer.parseInt(config_month))
-					|| (Integer
+			if (date.length != 0
+					&& !date[0].equals("")
+					&& ((Integer.parseInt(fmonth) <= Integer
+							.parseInt(config_month)) || (Integer
 							.parseInt(filename[1].split("_")[0].split("\\.")[0]) < Integer
-							.parseInt(config_year))) {
+							.parseInt(config_year)))) {
 				li_dsm.add(dsm_path);
 			}
 			int i = 2; // omitting the file name in the filepath.
@@ -160,15 +245,13 @@ public class User_Input_For_Prediction extends UserInput {
 			 * Looks for the month folder and year folder in the current
 			 * filepath.
 			 */
-
 			while (i < path.length) {
 				/*
 				 * Contains the dsm_path and main_file path.
 				 */
-				CalculateFilePath cfp = new CalculateFilePath();
+				cfp = new CalculateFilePath();
 				cfp.setDsm_path(dsm_path);
 				cfp.setPath(temp_path);
-
 				/*
 				 * Checks for the month. If the month is 0, then looks for last
 				 * year folder for the folder named 12.
@@ -181,7 +264,6 @@ public class User_Input_For_Prediction extends UserInput {
 
 				i++;
 			}
-
 			File dsm_f = new File(dsm_path);
 			if (!dsm_f.exists()) {
 				f = new File(temp_path);
@@ -202,23 +284,20 @@ public class User_Input_For_Prediction extends UserInput {
 							+ month + "\\";
 					File dir = new File(month_folder);
 					if (!dir.exists()) {
+
 						ff = false;
 					}
 				}
 			}
-			if (((Integer.parseInt(fmonth)) <= Integer.parseInt(config_month))
-					|| (Integer
+			if (date.length != 0
+					&& !date[0].equals("")
+					&& (((Integer.parseInt(fmonth)) <= Integer
+							.parseInt(config_month)) || (Integer
 							.parseInt(filename[1].split("_")[0].split("\\.")[0]) < Integer
-							.parseInt(config_year))) {
+							.parseInt(config_year)))) {
 				li.add(filepath);
 			}
-
 			filepath = temp_path;
-
-			if ((inp.equals("1") || inp.equals("2") || inp.equals("3"))
-					&& li.size() > size) {
-				break loop;
-			}
 		}
 
 		ListIterator<String> it = li_dsm.listIterator();
@@ -243,8 +322,8 @@ public class User_Input_For_Prediction extends UserInput {
 		while (it.hasNext()) {
 			System.out.println("first_li_dsm: " + it.next());
 		}
-		ui.setCreated_files_count(CreateDsmFiles(lf, timestep,
-				ui.getCreated_files_count()));
+		// ui.setCreated_files_count(CreateDsmFiles(lf, timestep,
+		// ui.getCreated_files_count()));
 		System.out.println("created_files_count: "
 				+ ui.getCreated_files_count());
 
@@ -371,7 +450,7 @@ public class User_Input_For_Prediction extends UserInput {
 						+ parseMonthInt(fmonth)
 						+ (Integer.parseInt(filename[1].split("_")[0]
 								.split("\\.")[0]) - 1)
-						+ dsm_suffix.substring(2);
+						+ dsm_suffix.substring(4);
 				temp_path = temp_path
 						+ filename[0]
 						+ parseMonthInt(fmonth)
@@ -394,12 +473,13 @@ public class User_Input_For_Prediction extends UserInput {
 	 * @return
 	 * @throws Exception
 	 */
-	public static int CreateDsmFiles(ListFiles lf, int timestep,
-			int created_files_count) throws Exception {
+	public static void CreateDsmFiles(ListFiles lf, int timestep)
+			throws Exception {
 		ListIterator<String> it = lf.getDsm_li().listIterator();
 		int index = 0;
 		while (it.hasNext()) {
 			File dsm_file = new File(it.next());
+			System.out.println("li_dsm: " + dsm_file);
 			if (!dsm_file.exists()) {
 				index = it.nextIndex() - 1;
 				String filepath = lf.getMain_li().get(index);
@@ -413,19 +493,13 @@ public class User_Input_For_Prediction extends UserInput {
 					System.err
 							.println(main_file.getName()
 									+ " does not exist!!! \n Creating the file using EMS Converter...");
-					final EMS_2_CSV.gui.EMSConverter ems = new EMS_2_CSV.gui.EMSConverter();
-
+					EMS_2_CSV.gui.EMSConverter ems = new EMS_2_CSV.gui.EMSConverter();
 					ems.convertBinaryToCSV(main_file.getAbsolutePath());
-					while (!main_file.exists()) {
-						Thread.sleep(100);
-					}
-					created_files_count++;
 					System.err.println("Processing File: "
 							+ main_file.getAbsolutePath());
 					ProcessCSVOnUserInput.userInputProcessing(
 							main_file.getAbsolutePath(), timestep);
 				} else {
-					created_files_count++;
 					System.err.println("Processing File: "
 							+ main_file.getAbsolutePath());
 					ProcessCSVOnUserInput.userInputProcessing(
@@ -433,7 +507,6 @@ public class User_Input_For_Prediction extends UserInput {
 				}
 			}
 		}
-		return created_files_count;
 	}
 
 }

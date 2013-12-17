@@ -47,11 +47,11 @@ public class Visualization {
 		String[][][] mean = new String[uniquedate_l][selectionlength][timecount];
 		String Line = br.readLine();
 		bw.write("time");
-		System.out.print("time");
+		// System.out.print("time");
 		String[][] weekday = new String[uniquedate_l][selectionlength];
 		for (int a = 0; a < uniquedate_l; a++) {
 			bw.write(",  weekday");
-			System.out.print("\t weekday");
+			// System.out.print("\t weekday");
 			for (i = 0; i < selectionlength; i++) {
 				if (uniqueSet.toArray()[a] != null) {
 					DateFormat sf = new SimpleDateFormat("dd.MM.yyyy");
@@ -60,8 +60,8 @@ public class Visualization {
 					weekday[a][i] = sdf1.format(cur_date);
 					bw.write(" , " + Line.split(",")[i + 3] + "_$"
 							+ uniqueSet.toArray()[a] + "_" + weekday[a][i]);
-					System.out.print("\t" + Line.split(",")[i + 3] + "_$"
-							+ uniqueSet.toArray()[a] + "_" + weekday[a][i]);
+					// System.out.print("\t" + Line.split(",")[i + 3] + "_$"
+					// + uniqueSet.toArray()[a] + "_" + weekday[a][i]);
 				}
 			}
 		}
@@ -105,21 +105,21 @@ public class Visualization {
 		String[][] tot_mean = new String[selectionlength * uniquedate_l][uniquetime_l];
 		k = 0;
 		while (k < uniquetime_l) {
-			System.out.println();
+			// System.out.println();
 			bw.write("\n");
-			System.out.print("" + unique_time.toArray()[k]);
+			// System.out.print("" + unique_time.toArray()[k]);
 			bw.write("" + unique_time.toArray()[k]);
 			i = 0;
 			while (i < uniquedate_l) {
-				System.out.print(" \t weekday[" + i + "][" + 0 + "] "
-						+ weekday[i][0]);
+				// System.out.print(" \t weekday[" + i + "][" + 0 + "] "
+				// + weekday[i][0]);
 				bw.write("," + weekday[i][0]);
 				for (j = 0; j < selectionlength; j++) {
 					if (mean[i][j][k] != null) {
 						tot_mean[(selectionlength * i) + j][k] = mean[i][j][k];
-						System.out.print("\t tot_mean["
-								+ ((selectionlength * i) + j) + "][" + k + "]"
-								+ tot_mean[(selectionlength * i) + j][k]);
+						// System.out.print("\t tot_mean["
+						// + ((selectionlength * i) + j) + "][" + k + "]"
+						// + tot_mean[(selectionlength * i) + j][k]);
 						bw.write("," + tot_mean[(selectionlength * i) + j][k]);
 					} else {
 						if ((k != 0)
@@ -128,15 +128,15 @@ public class Visualization {
 									+ j][k - 1];
 							bw.write(","
 									+ tot_mean[(selectionlength * i) + j][k]);
-							System.out.print(" \t tot_mean["
-									+ ((selectionlength * i) + j) + "][" + k
-									+ "]"
-									+ tot_mean[(selectionlength * i) + j][k]);
+							// System.out.print(" \t tot_mean["
+							// + ((selectionlength * i) + j) + "][" + k
+							// + "]"
+							// + tot_mean[(selectionlength * i) + j][k]);
 						} else {
 							bw.write(",0");
-							System.out.print(" \t tot_mean["
-									+ ((selectionlength * i) + j) + "][" + k
-									+ "]0");
+							// System.out.print(" \t tot_mean["
+							// + ((selectionlength * i) + j) + "][" + k
+							// + "]0");
 						}
 					}
 				}
@@ -145,7 +145,7 @@ public class Visualization {
 			k++;
 		}
 
-		System.out.println();
+		// System.out.println();
 
 		System.out.println("length of the array acc. to timestep: " + timecount
 				+ " \t k:" + uniquetime_l + "\t unique_date:" + uniquedate_l);

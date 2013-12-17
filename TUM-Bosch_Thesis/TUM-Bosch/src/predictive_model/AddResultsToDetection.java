@@ -6,13 +6,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import model_class.WEKAInputFiles;
 import descriptive_model.Weka_Algorithm;
 
 public class AddResultsToDetection {
@@ -33,8 +31,8 @@ public class AddResultsToDetection {
 			throws Exception {
 		// To check for empty file, to write the header to the file.
 		Boolean emptyFile = false;
+		String prediction_filepath = null;
 		File f = new File(detection_filepath);
-		WEKAInputFiles wif = new WEKAInputFiles();
 		// If the data is not found in detection_filepath, it is written into
 		// the detection_filepath.
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
@@ -43,9 +41,15 @@ public class AddResultsToDetection {
 				"thesis.config"));
 		String line_c = null;
 		String fp = null;
+		String config_month = null;
+		String config_year = null;
 		while ((line_c = config.readLine()) != null) {
 			if (line_c.contains("Location:")) {
 				fp = line_c.split("n:")[1].trim();
+			}
+			if (line_c.contains("Prediction:")) {
+				config_month = line_c.split("n:")[1].trim().split("\\.")[0];
+				config_year = line_c.split("n:")[1].trim().split("\\.")[1];
 			}
 		}
 		config.close();
@@ -59,112 +63,102 @@ public class AddResultsToDetection {
 		for (int j = 0; j < dates.length; j++) {
 			String date_for_prediction = dates[j]; // dateSelectedByUser(dates);
 
-			List<String> date = TrimDateArray(date_for_prediction, dates);
+			List<String> date = TrimDateArray(date_for_prediction, dates,
+					config_month, config_year);
 			String[] new_dates = new String[date.size()];
 			date.toArray(new_dates);
 			// System.out.println("New Dates: " + date);
 
-			for (int i = li_dsm.size(); i > 0; i--) {
-				String filepath = li_dsm.get(i - 1);
+			for (int i = li_dsm.size() - 1; i >= 0; i--) {
+				String filepath = li_dsm.get(i);
 				filepath = filepath.split("\\.")[0] + "_Actual.csv";
-				actual_files.add(filepath);
-				// System.out.println(filepath);
-				String line = "";
-				BufferedReader br = new BufferedReader(new FileReader(filepath));
+				f = new File(filepath);
+				if (f.exists()) {
+					actual_files.add(filepath);
+					// System.out.println(filepath);
+					String line = "";
+					BufferedReader br = new BufferedReader(new FileReader(
+							filepath));
 
-				/*
-				 * If the file is empty, the header line is written into the
-				 * detection file along with the content from the first month in
-				 * the gateway.
-				 */
-				if (emptyFile) {
-					while ((line = br.readLine()) != null) {
-						bw.write(line + "\n");
+					/*
+					 * If the file is empty, the header line is written into the
+					 * detection file along with the content from the first
+					 * month in the gateway.
+					 */
+					if (emptyFile) {
+						while ((line = br.readLine()) != null) {
+							bw.write(line + "\n");
+						}
+						emptyFile = false;
+						bw.flush();
+						bw.close();
+					} else {
+						br.close();
+
+						// Checks whether the content of filepath is already
+						// available,
+						// if not writes the content into the filepath.
+						preventRewriting_days(new_dates, detection_filepath,
+								filepath);
+
+						// Creates prediction file for the last date in the last
+						// month
+						// in the list of files.
+						if (new_dates[0].split("\\.")[1].equals(config_month)
+								&& new_dates[0].split("\\.")[2]
+										.equals(config_year))
+							prediction_filepath = createPredictionFile(
+									filepath, date_for_prediction);
+
 					}
-					emptyFile = false;
-					bw.flush();
-					bw.close();
-				} else {
 					br.close();
-
-					// Checks whether the content of filepath is already
-					// available,
-					// if not writes the content into the filepath.
-					preventRewriting_days(new_dates, detection_filepath,
-							filepath);
-
-					// Creates prediction file for the last date in the last
-					// month
-					// in the list of files.
-					if (i == 1)
-						wif.setPrediction_filepath(createPredictionFile(
-								filepath, new_dates));
-
 				}
-				br.close();
 			}
-			wif.setDetection_filepath(detection_filepath);
 			// System.out.println(detection_filepath);
-			String file = wif.getDetection_filepath().substring(0,
-					wif.getDetection_filepath().indexOf("."))
+			String file = detection_filepath.substring(0,
+					detection_filepath.indexOf("."))
 					+ ".arff";
 			f = new File(file);
 			if (f.exists()) {
 				f.delete();
 			}
-			if (j == 0)
-				file = Weka_Algorithm.applyWeka(wif.getDetection_filepath());
-			BufferedWriter output = new BufferedWriter(new FileWriter(fp
-					+ "\\output.csv", true));
-			output.write(f.getName().split("_")[1] + "," + "Decision Table,"
-					+ date_for_prediction + ",");
-			output.flush();
-			output.close();
-			// System.out.println("\n" + wif.getPrediction_filepath() + "\n");
-			Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
-					wif.getPrediction_filepath(), timestep, 1);
-			output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
-					true));
-			output.write(f.getName().split("_")[1] + "," + "Random Forest,"
-					+ date_for_prediction + ",");
-			output.flush();
-			output.close();
-			// System.out.println("\n" + wif.getPrediction_filepath() + "\n");
-			Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
-					wif.getPrediction_filepath(), timestep, 2);
-			output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
-					true));
-			output.write(f.getName().split("_")[1] + "," + "Bagging,"
-					+ date_for_prediction + ",");
-			output.flush();
-			output.close();
-			// System.out.println("\n" + wif.getPrediction_filepath() + "\n");
-			Probablistic_Model.algorithm(file_act, wif.getDetection_filepath(),
-					wif.getPrediction_filepath(), timestep, 3);
 
+			if (new_dates[0].split("\\.")[1].equals(config_month)
+					&& new_dates[0].split("\\.")[2].equals(config_year)) {
+				if (j == 0)
+					file = Weka_Algorithm.applyWeka(detection_filepath);
+				BufferedWriter output = new BufferedWriter(new FileWriter(fp
+						+ "\\output.csv", true));
+				output.write(f.getName().split("_")[1] + ","
+						+ "Decision Table," + date_for_prediction + ",");
+				output.flush();
+				output.close();
+				// System.out.println("\n" + wif.getPrediction_filepath() +
+				// "\n");
+				Probablistic_Model.algorithm(file_act, detection_filepath,
+						prediction_filepath, timestep, 1);
+				output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
+						true));
+				output.write(f.getName().split("_")[1] + "," + "Random Forest,"
+						+ date_for_prediction + ",");
+				output.flush();
+				output.close();
+				// System.out.println("\n" + wif.getPrediction_filepath() +
+				// "\n");
+				Probablistic_Model.algorithm(file_act, detection_filepath,
+						prediction_filepath, timestep, 2);
+				output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
+						true));
+				output.write(f.getName().split("_")[1] + "," + "Bagging,"
+						+ date_for_prediction + ",");
+				output.flush();
+				output.close();
+				// System.out.println("\n" + wif.getPrediction_filepath() +
+				// "\n");
+				Probablistic_Model.algorithm(file_act, detection_filepath,
+						prediction_filepath, timestep, 3);
+			}
 		}
-	}
-
-	/**
-	 * Get the date for prediction from the user. Show a list of dates from the
-	 * main file.
-	 * 
-	 * @param date
-	 * @return
-	 * @throws IOException
-	 */
-	public static String dateSelectedByUser(String[] dates) throws IOException {
-
-		System.out.println("Available dates for prediction: ");
-		for (int i = 0; i < dates.length; i++) {
-			System.out.println((i + 1) + ") " + dates[i]);
-		}
-		System.out.println("Enter the date to be predicted "
-				+ "in the same format listed above: ");
-		BufferedReader input = new BufferedReader(new InputStreamReader(
-				System.in));
-		int inp = Integer.parseInt(input.readLine());
-		return dates[inp - 1];
 	}
 
 	/**
@@ -173,13 +167,17 @@ public class AddResultsToDetection {
 	 * 
 	 * @param date_for_prediction
 	 * @param dates
+	 * @param config_year
+	 * @param config_month
 	 * @return
 	 */
 	public static List<String> TrimDateArray(String date_for_prediction,
-			String[] dates) {
+			String[] dates, String config_month, String config_year) {
 		List<String> new_dates = new ArrayList<String>();
 		dates: for (int i = 0; i < dates.length; i++) {
-			if (!dates[i].equals(date_for_prediction)) {
+			if (date_for_prediction.split("\\.")[1].equals(config_month)
+					&& date_for_prediction.split("\\.")[2].equals(config_year)
+					&& !dates[i].equals(date_for_prediction)) {
 				new_dates.add(dates[i]);
 			} else {
 				new_dates.add(dates[i]);
@@ -198,23 +196,25 @@ public class AddResultsToDetection {
 	 * @return prediction_filepath
 	 * @throws IOException
 	 */
-	public static String createPredictionFile(String filepath, String[] dates)
-			throws IOException {
+	public static String createPredictionFile(String filepath,
+			String date_for_prediction) throws IOException {
 
 		// Manipulates unique filename with the corresponding date for which
 		// prediction has to be done.
 		String prediction_filepath = filepath.split("\\.")[0] + "_"
-				+ dates[dates.length - 1] + "_$Prediction.csv";
+				+ date_for_prediction + "_$Prediction.csv";
+		File f = new File(prediction_filepath);
 
 		BufferedReader br = new BufferedReader(new FileReader(filepath));
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				prediction_filepath, true));
 		String line = br.readLine();
 		int i = 0;
-
-		bw.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
+		if (f.length() == 0) {
+			bw.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
+		}
 		while ((line = br.readLine()) != null) {
-			if (line.split(",")[0].equals(dates[dates.length - 1])) {
+			if (line.split(",")[0].equals(date_for_prediction)) {
 				if (i == 0)
 					bw.write(line.split(",")[0] + "," + line.split(",")[1]
 							+ "," + line.split(",")[2] + ","

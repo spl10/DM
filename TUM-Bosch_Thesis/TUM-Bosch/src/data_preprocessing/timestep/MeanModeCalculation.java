@@ -94,12 +94,12 @@ public class MeanModeCalculation {
 									mean[i][j] = "1";
 								else
 									mean[i][j] = "0";
-								System.out.println("j: " + j + "\t date_arr["
-										+ j + "]: " + date_arr[j]
-										+ " \t sampling_time[" + j + "]: "
-										+ sampling_time[j] + "\t i: " + i
-										+ "\t mean[" + i + "][" + j + "]: "
-										+ mean[i][j]);
+								// System.out.println("j: " + j + "\t date_arr["
+								// + j + "]: " + date_arr[j]
+								// + " \t sampling_time[" + j + "]: "
+								// + sampling_time[j] + "\t i: " + i
+								// + "\t mean[" + i + "][" + j + "]: "
+								// + mean[i][j]);
 								count[i] = 0;
 								count[i] += param[i];
 								if (i == (selectionlength - 1))
@@ -114,12 +114,12 @@ public class MeanModeCalculation {
 								mean[i][j] = String
 										.valueOf(Math
 												.round((sum[i] / timestep) * 100.0) / 100.0);
-								System.out.println("j: " + j + "\t date_arr["
-										+ j + "]: " + date_arr[j]
-										+ " \t sampling_time[" + j + "]: "
-										+ sampling_time[j] + "\t i: " + i
-										+ "\t mean[" + i + "][" + j + "]: "
-										+ mean[i][j]);
+								// System.out.println("j: " + j + "\t date_arr["
+								// + j + "]: " + date_arr[j]
+								// + " \t sampling_time[" + j + "]: "
+								// + sampling_time[j] + "\t i: " + i
+								// + "\t mean[" + i + "][" + j + "]: "
+								// + mean[i][j]);
 								sum[i] = 0;
 								sum[i] += param[i];
 								if (i == (selectionlength - 1))
@@ -132,12 +132,12 @@ public class MeanModeCalculation {
 							if ((time % timestep == 0)) {
 								mean[i][j] = String.valueOf(Math
 										.round((sum[i] / k) * 100.0) / 100.0);
-								System.out.println("j: " + j + "\t date_arr["
-										+ j + "]: " + date_arr[j]
-										+ " \t sampling_time[" + j + "]: "
-										+ sampling_time[j] + "\t i: " + i
-										+ "\t mean[" + i + "][" + j + "]: "
-										+ mean[i][j]);
+								// System.out.println("j: " + j + "\t date_arr["
+								// + j + "]: " + date_arr[j]
+								// + " \t sampling_time[" + j + "]: "
+								// + sampling_time[j] + "\t i: " + i
+								// + "\t mean[" + i + "][" + j + "]: "
+								// + mean[i][j]);
 								sum[i] = 0;
 								sum[i] += param[i];
 								if (i == (selectionlength - 1))

@@ -29,13 +29,13 @@ public class WriteToCSV {
 				+ timestep + "ts.csv";
 		BufferedWriter new_csv = new BufferedWriter(new FileWriter(filepath));
 		new_csv.write("date_arr,day,time");
-		System.out.print("date_arr \t day \t time");
+		// System.out.print("date_arr \t day \t time");
 		for (int i = 0; i < selectionlength; i++) {
 			new_csv.write("," + selectedParameters[i]);
-			System.out.print("\t " + selectedParameters[i]);
+			// System.out.print("\t " + selectedParameters[i]);
 		}
 		new_csv.write("\n");
-		System.out.println();
+		// System.out.println();
 
 		String weekday = null;
 		for (int j = 0; j < final_arr_len; j++) {
@@ -46,29 +46,30 @@ public class WriteToCSV {
 				weekday = sdf1.format(cur_date);
 				new_csv.write(date_arr[j] + "," + weekday + ","
 						+ sampling_time[j]);
-				System.out.print(date_arr[j] + "\t " + weekday + " \t "
-						+ sampling_time[j]);
+				// System.out.print(date_arr[j] + "\t " + weekday + " \t "
+				// + sampling_time[j]);
 			}
 			for (int i = 0; i < selectionlength; i++) {
 				if (j == final_arr_len - 1) {
 					new_csv.write("," + mean[i][j]);
-					System.out.print("\t mean[" + i + "][" + (j + 1) + "] "
-							+ mean[i][j]);
+					// System.out.print("\t mean[" + i + "][" + (j + 1) + "] "
+					// + mean[i][j]);
 				}
 				if (mean[i][j + 1] != null) {
 					if (!mean[i][j + 1].isEmpty()) {
 						new_csv.write("," + mean[i][j + 1]);
-						System.out.print("\t mean[" + i + "][" + (j + 1) + "] "
-								+ mean[i][j + 1]);
+						// System.out.print("\t mean[" + i + "][" + (j + 1) +
+						// "] "
+						// + mean[i][j + 1]);
 					} else {
 						new_csv.write(",0");
-						System.out.print("\t mean[" + i + "][" + (j + 1)
-								+ "] 0");
+						// System.out.print("\t mean[" + i + "][" + (j + 1)
+						// + "] 0");
 					}
 				}
 			}
 			new_csv.write("\n");
-			System.out.println();
+			// System.out.println();
 		}
 
 		new_csv.flush();
