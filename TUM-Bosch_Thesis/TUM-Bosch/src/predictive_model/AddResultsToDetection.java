@@ -101,7 +101,8 @@ public class AddResultsToDetection {
 						preventRewriting_days(new_dates, detection_filepath,
 								filepath);
 
-						// Creates prediction file for the last date in the last
+						// Creates prediction file for the last date in the
+						// last
 						// month
 						// in the list of files.
 						if (new_dates[0].split("\\.")[1].equals(config_month)
@@ -175,13 +176,16 @@ public class AddResultsToDetection {
 			String[] dates, String config_month, String config_year) {
 		List<String> new_dates = new ArrayList<String>();
 		dates: for (int i = 0; i < dates.length; i++) {
-			if (date_for_prediction.split("\\.")[1].equals(config_month)
-					&& date_for_prediction.split("\\.")[2].equals(config_year)
-					&& !dates[i].equals(date_for_prediction)) {
+			if (!(date_for_prediction.split("\\.")[1].equals(config_month) && date_for_prediction
+					.split("\\.")[2].equals(config_year))) {
 				new_dates.add(dates[i]);
 			} else {
-				new_dates.add(dates[i]);
-				break dates;
+				if (!dates[i].equals(date_for_prediction)) {
+					new_dates.add(dates[i]);
+				} else {
+					new_dates.add(dates[i]);
+					break dates;
+				}
 			}
 		}
 		return new_dates;

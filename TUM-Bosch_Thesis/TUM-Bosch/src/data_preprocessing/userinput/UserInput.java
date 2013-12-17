@@ -59,20 +59,18 @@ public class UserInput {
 		System.err.println("Timestep: " + timestep);
 		File location = new File(filepath);
 		File[] gateways = location.listFiles();
-		for (int i = gateways.length - 1; i >= 0; i--) {
+		gateways: for (int i = gateways.length - 1; i >= 0; i--) {
 			if (gateways[i].isDirectory()) {
 				File[] years = gateways[i].listFiles();
-				gateway: for (int j = years.length - 1; j >= 0; j--) {
+				for (int j = years.length - 1; j >= 0; j--) {
 					if (years[j].isDirectory()) {
 						File[] months = years[j].listFiles();
 						for (int k = months.length - 1; k >= 0; k--) {
 							if (months[k].isDirectory()
-									&& ((Integer.parseInt(months[k].getName()) <= Integer
-											.parseInt(config_month) && (Integer
+									&& (Integer.parseInt(months[k].getName()) == Integer
+											.parseInt(config_month) && Integer
 											.parseInt(years[j].getName()) == Integer
-											.parseInt(config_year))) || ((Integer
-											.parseInt(years[j].getName()) < Integer
-											.parseInt(config_year))))) {
+											.parseInt(config_year))) {
 								filepath = months[k].getPath() + "\\output\\";
 
 								File dir = new File(filepath);
@@ -88,6 +86,8 @@ public class UserInput {
 											+ years[j].getName() + ".csv";
 									f = new File(filepath);
 									f.createNewFile();
+									System.err
+											.println("Called From UserInput()");
 									ems.convertBinaryToCSV(filepath);
 								} else {
 									filepath = dir.getPath()
@@ -104,7 +104,7 @@ public class UserInput {
 										ems.convertBinaryToCSV(dir.getPath());
 									}
 								}
-								break gateway;
+								break gateways;
 							}
 						}
 					}
