@@ -73,7 +73,6 @@ public class Probablistic_Model {
 		br_predict.close();
 		bw.flush();
 		bw.close();
-		// Weka_Algorithm.applyWeka_Prediction(Actual_filepath, predict_final);
 		if (algorithm == 1)
 			Weka_Algorithm.applyWeka_DecisionTable(detection_filepath,
 					predict_final);

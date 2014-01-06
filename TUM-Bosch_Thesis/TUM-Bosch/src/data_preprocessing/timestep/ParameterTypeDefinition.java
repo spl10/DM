@@ -31,67 +31,51 @@ public class ParameterTypeDefinition {
 		BufferedReader br = new BufferedReader(new FileReader(filepath));
 		String[] type = new String[selectionlength];
 		int[] type_count = new int[selectionlength];
-		// String line = br.readLine();
-		// while ((line = br.readLine()) != null) {
-		// for (int i = 0; i < temp.length; i++) {
-		// if ((!line.split(",")[temp[i]].equals("1") &&
-		// !line.split(",")[temp[i]]
-		// .equals("0"))) {
-		// type_count[i]++;
-		// } else {
-		// type[i] = "binary";
-		// }
-		// }
-		// }
 		for (int i = 0; i < temp.length; i++) {
-			switch (selectedParameters[i].trim()) {
-			case "DT00233_1-2DHW_Actual_Temperature":
+			if (selectedParameters[i].trim().equals(
+					"DT00233_1-2DHW_Actual_Temperature"))
 				type[i] = "Numeric";
-				break;
-			case "DT00233_0DHW_setpoint":
+			else if (selectedParameters[i].trim().equals(
+					"DT00233_0DHW_setpoint"))
 				type[i] = "Numeric";
-				break;
-			case "DT00209_0-1Outdoor_temperature_measured_value":
+			else if (selectedParameters[i].trim().equals(
+					"DT00209_0-1Outdoor_temperature_measured_value"))
 				type[i] = "Numeric";
-				break;
-			case "DT00233_3-4DHW_cylinder_temperature":
+			else if (selectedParameters[i].trim().equals(
+					"DT00233_3-4DHW_cylinder_temperature"))
 				type[i] = "Numeric";
-				break;
-			case "DT00048_0-1mains_voltage":
+			else if (selectedParameters[i].trim().equals(
+					"DT00048_0-1mains_voltage"))
 				type[i] = "Numeric";
-				break;
-			case "DT00227_0.0Operation_State_Source__HEAT":
+			else if (selectedParameters[i].trim().equals(
+					"DT00227_0.0Operation_State_Source__HEAT"))
 				type[i] = "Binary";
-				break;
-			case "DT00227_0.2Operation_State_Source__IDLE":
+			else if (selectedParameters[i].trim().equals(
+					"DT00227_0.2Operation_State_Source__IDLE"))
 				type[i] = "Binary";
-				break;
-			case "DT00227_13System_Power":
+			else if (selectedParameters[i].trim().equals(
+					"DT00227_13System_Power"))
 				type[i] = "Numeric";
-				break;
-			case "DT00228_23-24Appliance_Supply_Temperature":
+			else if (selectedParameters[i].trim().equals(
+					"DT00228_23-24Appliance_Supply_Temperature"))
 				type[i] = "Numeric";
-				break;
-			case "DT00022_0CH_switch_on_off":
+			else if (selectedParameters[i].trim().equals(
+					"DT00022_0CH_switch_on_off"))
 				type[i] = "Binary";
-				break;
-			case "DT00233_17-19Number_of_starts_DHW":
+			else if (selectedParameters[i].trim().equals(
+					"DT00233_17-19Number_of_starts_DHW"))
 				type[i] = "FindMax";
-				break;
-			case "DT00231_0Circulation_pump_request":
+			else if (selectedParameters[i].trim().equals(
+					"DT00231_0Circulation_pump_request"))
 				type[i] = "Binary";
-				break;
-			case "DT00233_14-16Total_working_time_DHW":
+			else if (selectedParameters[i].trim().equals(
+					"DT00233_14-16Total_working_time_DHW"))
 				type[i] = "Numeric";
-				break;
-			default:
-				if (type_count[i] != 0) {
-					type[i] = "Numeric";
-				} else {
-					type[i] = "Binary";
-				}
+			else if (type_count[i] != 0) {
+				type[i] = "Numeric";
+			} else {
+				type[i] = "Binary";
 			}
-
 		}
 		br.close();
 		return type;

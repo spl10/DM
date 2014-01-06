@@ -19,6 +19,7 @@ public class delete_output_folder {
 		config.close();
 		File f = new File(filepath);
 		deleteFolder(f);
+		System.out.println("COMPLETED!!!");
 	}
 
 	private static void deleteFolder(File f) throws IOException {

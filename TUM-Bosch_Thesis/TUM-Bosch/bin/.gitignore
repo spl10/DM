@@ -1,10 +1,2 @@
-/data_preprocessing
 /descriptive_model
-/model_class
-/predictive_model
-/visualization
-/EMS_2_CSV
-/emspd
-/gui
-/preprocess
-/readIn
+/data_preprocessing

@@ -129,7 +129,7 @@ public class AddResultsToDetection {
 				if (j == 0)
 					file = Weka_Algorithm.applyWeka(detection_filepath);
 				BufferedWriter output = new BufferedWriter(new FileWriter(fp
-						+ "\\output.csv", true));
+						+ "/output.csv", true));
 				output.write(f.getName().split("_")[1] + ","
 						+ "Decision Table," + date_for_prediction + ",");
 				output.flush();
@@ -138,7 +138,7 @@ public class AddResultsToDetection {
 				// "\n");
 				Probablistic_Model.algorithm(file_act, detection_filepath,
 						prediction_filepath, timestep, 1);
-				output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
+				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
 						true));
 				output.write(f.getName().split("_")[1] + "," + "Random Forest,"
 						+ date_for_prediction + ",");
@@ -148,7 +148,7 @@ public class AddResultsToDetection {
 				// "\n");
 				Probablistic_Model.algorithm(file_act, detection_filepath,
 						prediction_filepath, timestep, 2);
-				output = new BufferedWriter(new FileWriter(fp + "\\output.csv",
+				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
 						true));
 				output.write(f.getName().split("_")[1] + "," + "Bagging,"
 						+ date_for_prediction + ",");

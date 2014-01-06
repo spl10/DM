@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.util.Random;
 
 import weka.classifiers.evaluation.Evaluation;
@@ -120,12 +121,26 @@ public class Weka_Algorithm {
 		}
 		config.close();
 		BufferedWriter output = new BufferedWriter(new FileWriter(fp
-				+ "\\output.csv", true));
-
+				+ "/output.csv", true));
+		double precision = evaluation.numTruePositives(0)
+				/ (evaluation.numTruePositives(0) + evaluation
+						.numFalseNegatives(0));
+		double recall = evaluation.numTruePositives(0)
+				/ (evaluation.numTruePositives(0) + evaluation
+						.numFalsePositives(0));
+		double predictive_accuracy = (evaluation.numTruePositives(0) + evaluation
+				.numTrueNegatives(0))
+				/ (evaluation.numTruePositives(0)
+						+ evaluation.numTrueNegatives(0)
+						+ evaluation.numFalsePositives(0) + evaluation
+							.numFalseNegatives(0));
+		DecimalFormat df = new DecimalFormat("##.##");
 		output.write(Math.round((evaluation.pctCorrect() * 100) / 100)
 				+ ","
 				+ Math.round((((evaluation.numFalsePositives(0) / (24 * (60 / timestep))) * 100) * 100) / 100)
-				+ "\n");
+				+ "," + df.format(evaluation.precision(0) * 100) + ","
+				+ df.format(evaluation.recall(0) * 100) + ","
+				+ df.format(predictive_accuracy * 100) + "\n");
 		output.flush();
 		output.close();
 		// System.out.println(evaluation.toSummaryString("\nResults\n======\n",
@@ -191,12 +206,27 @@ public class Weka_Algorithm {
 		}
 		config.close();
 		BufferedWriter output = new BufferedWriter(new FileWriter(fp
-				+ "\\output.csv", true));
+				+ "/output.csv", true));
 
+		double precision = evaluation.numTruePositives(0)
+				/ (evaluation.numTruePositives(0) + evaluation
+						.numFalseNegatives(0));
+		double recall = evaluation.numTruePositives(0)
+				/ (evaluation.numTruePositives(0) + evaluation
+						.numFalsePositives(0));
+		double predictive_accuracy = (evaluation.numTruePositives(0) + evaluation
+				.numTrueNegatives(0))
+				/ (evaluation.numTruePositives(0)
+						+ evaluation.numTrueNegatives(0)
+						+ evaluation.numFalsePositives(0) + evaluation
+							.numFalseNegatives(0));
+		DecimalFormat df = new DecimalFormat("##.##");
 		output.write(Math.round((evaluation.pctCorrect() * 100) / 100)
 				+ ","
 				+ Math.round((((evaluation.numFalsePositives(0) / (24 * (60 / timestep))) * 100) * 100) / 100)
-				+ "\n");
+				+ "," + df.format(evaluation.precision(0) * 100) + ","
+				+ df.format(evaluation.recall(0) * 100) + ","
+				+ df.format(predictive_accuracy * 100) + "\n");
 		output.flush();
 		output.close();
 		// System.out.println(evaluation.toSummaryString("\nResults\n======\n",
@@ -273,12 +303,28 @@ public class Weka_Algorithm {
 		}
 		config.close();
 		BufferedWriter output = new BufferedWriter(new FileWriter(fp
-				+ "\\output.csv", true));
+				+ "/output.csv", true));
 
+		double precision = evaluation.numTruePositives(0)
+				/ (evaluation.numTruePositives(0) + evaluation
+						.numFalseNegatives(0));
+		double recall = evaluation.numTruePositives(0)
+				/ (evaluation.numTruePositives(0) + evaluation
+						.numFalsePositives(0));
+
+		double predictive_accuracy = (evaluation.numTruePositives(0) + evaluation
+				.numTrueNegatives(0))
+				/ (evaluation.numTruePositives(0)
+						+ evaluation.numTrueNegatives(0)
+						+ evaluation.numFalsePositives(0) + evaluation
+							.numFalseNegatives(0));
+		DecimalFormat df = new DecimalFormat("##.##");
 		output.write(Math.round((evaluation.pctCorrect() * 100) / 100)
 				+ ","
 				+ Math.round((((evaluation.numFalsePositives(0) / (24 * (60 / timestep))) * 100) * 100) / 100)
-				+ "\n");
+				+ "," + df.format(evaluation.precision(0) * 100) + ","
+				+ df.format(evaluation.recall(0) * 100) + ","
+				+ df.format(predictive_accuracy * 100) + "\n");
 		output.flush();
 		output.close();
 		// System.out.println(evaluation.toSummaryString("\nResults\n======\n",

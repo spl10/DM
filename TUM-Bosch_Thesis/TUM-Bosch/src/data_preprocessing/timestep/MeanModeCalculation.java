@@ -87,8 +87,7 @@ public class MeanModeCalculation {
 						} else {
 							param[i] = 0.0;
 						}
-						switch (type[i]) {
-						case "Binary":
+						if( type[i].equals("Binary")){
 							if ((time % timestep == 0)) {
 								if (count[i] > (k / 2))
 									mean[i][j] = "1";
@@ -108,8 +107,8 @@ public class MeanModeCalculation {
 								if (param[i] == 1)
 									count[i]++;
 							}
-							break;
-						case "FindMax":
+						}
+						if( type[i].equals("FindMax")){
 							if ((time % timestep == 0)) {
 								mean[i][j] = String
 										.valueOf(Math
@@ -127,8 +126,8 @@ public class MeanModeCalculation {
 							} else {
 								sum[i] += param[i];
 							}
-							break;
-						case "Numeric":
+						}
+						if( type[i].equals("Numeric")){ 
 							if ((time % timestep == 0)) {
 								mean[i][j] = String.valueOf(Math
 										.round((sum[i] / k) * 100.0) / 100.0);
@@ -145,9 +144,6 @@ public class MeanModeCalculation {
 							} else {
 								sum[i] += param[i];
 							}
-							break;
-						default:
-							break;
 						}
 					}
 					if (time % timestep == 0 && j != 0) {

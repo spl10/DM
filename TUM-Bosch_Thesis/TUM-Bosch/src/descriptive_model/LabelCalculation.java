@@ -16,8 +16,6 @@ import model_class.Prediction;
 
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 
-import predictive_model.User_Input_For_Prediction;
-
 /* Label is calculated based on the parameters 
  * selected by the user. 
  */
@@ -204,8 +202,8 @@ public class LabelCalculation {
 			bw_actual.flush();
 			bw_actual.close();
 			br.close();
-			User_Input_For_Prediction.userInput(dates, filepath, timestep,
-					file_act);
+			// User_Input_For_Prediction.userInput(dates, filepath, timestep,
+			// file_act);
 			System.out.println(file_predict);
 		}
 	}
