@@ -21,7 +21,7 @@ public class EMSConverter {
 		String path = f.getPath().split("output")[0];
 		List<String> bin_li = getBinaryFiles(path);
 		File emspdFile = new File(
-				"/Users/roshinisachithanandan/git/DM/TUM-Bosch_Thesis/TUM-Bosch/SystemFiles/auto_test.emspd");
+				"C:\\Users\\SIP2LOL\\Documents\\MyTool\\EMS_Converter\\SystemFiles\\auto_test.emspd");
 		String[] inFiles = new String[bin_li.size()];
 		bin_li.toArray(inFiles);
 		EMS_Store store = null;

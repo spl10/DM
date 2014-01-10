@@ -128,7 +128,7 @@ public class LabelCalculation {
 			for (j = 0; j < at.length; j++) {
 				for (k = 0; k < timecount; k++) {
 					if (label[j][k] == null)
-						label[j][k] = "NO USAGE";
+						label[j][k] = "NOUSAGE";
 					if (j > 0 && k < (timecount)
 							&& (diff[j][k]) >= median[j - 1]) {
 						label[j][k] = "USAGE";
@@ -169,7 +169,7 @@ public class LabelCalculation {
 					if (i == 0)
 						bw_predicted.write(",USAGE\n");
 					else if (i == 1)
-						bw_predicted.write(",NO USAGE\n");
+						bw_predicted.write(",NOUSAGE\n");
 					else
 						bw_predicted.write(",?\n");
 				}

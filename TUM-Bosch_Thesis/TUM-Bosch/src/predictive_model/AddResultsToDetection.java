@@ -150,7 +150,7 @@ public class AddResultsToDetection {
 						prediction_filepath, timestep, 2);
 				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
 						true));
-				output.write(f.getName().split("_")[1] + "," + "Bagging,"
+				output.write(f.getName().split("_")[1] + "," + "KStar,"
 						+ date_for_prediction + ",");
 				output.flush();
 				output.close();
@@ -158,6 +158,27 @@ public class AddResultsToDetection {
 				// "\n");
 				Probablistic_Model.algorithm(file_act, detection_filepath,
 						prediction_filepath, timestep, 3);
+				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
+						true));
+				output.write(f.getName().split("_")[1] + "," + "Bagging,"
+						+ date_for_prediction + ",");
+				output.flush();
+				output.close();
+				// System.out.println("\n" + wif.getPrediction_filepath() +
+				// "\n");
+				Probablistic_Model.algorithm(file_act, detection_filepath,
+						prediction_filepath, timestep, 4);
+				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
+						true));
+				output.write(f.getName().split("_")[1] + ","
+						+ "Cost Sensitive Classifier," + date_for_prediction
+						+ ",");
+				output.flush();
+				output.close();
+				// System.out.println("\n" + wif.getPrediction_filepath() +
+				// "\n");
+				Probablistic_Model.algorithm(file_act, detection_filepath,
+						prediction_filepath, timestep, 5);
 			}
 		}
 	}
@@ -207,15 +228,21 @@ public class AddResultsToDetection {
 		// prediction has to be done.
 		String prediction_filepath = filepath.split("\\.")[0] + "_"
 				+ date_for_prediction + "_$Prediction.csv";
+		String actual_filepath = filepath.split("\\.")[0] + "_"
+				+ date_for_prediction + "_Actual.csv";
 		File f = new File(prediction_filepath);
 
 		BufferedReader br = new BufferedReader(new FileReader(filepath));
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				prediction_filepath, true));
+		BufferedWriter bw_actual = new BufferedWriter(new FileWriter(
+				actual_filepath));
 		String line = br.readLine();
 		int i = 0;
 		if (f.length() == 0) {
 			bw.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
+			bw_actual
+					.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
 		}
 		while ((line = br.readLine()) != null) {
 			if (line.split(",")[0].equals(date_for_prediction)) {
@@ -228,15 +255,21 @@ public class AddResultsToDetection {
 					bw.write(line.split(",")[0] + "," + line.split(",")[1]
 							+ "," + line.split(",")[2] + ","
 							+ line.split(",")[4] + "," + line.split(",")[5]
-							+ ",NO USAGE" + "\n");
+							+ ",NOUSAGE" + "\n");
 				else
 					bw.write(line.split(",")[0] + "," + line.split(",")[1]
 							+ "," + line.split(",")[2] + ","
 							+ line.split(",")[4] + "," + line.split(",")[5]
 							+ ",?" + "\n");
+				bw_actual.write(line.split(",")[0] + "," + line.split(",")[1]
+						+ "," + line.split(",")[2] + "," + line.split(",")[4]
+						+ "," + line.split(",")[5] + "," + line.split(",")[10]
+						+ "\n");
 				i++;
 			}
 		}
+		bw_actual.flush();
+		bw_actual.close();
 		bw.flush();
 		bw.close();
 		br.close();
@@ -296,6 +329,17 @@ public class AddResultsToDetection {
 		// System.out.println("size: " + dates.size() + " unique dates: " +
 		// dates);
 		String missing_dates[] = new String[dates.size()];
+		BufferedReader config = new BufferedReader(new FileReader(
+				"thesis.config"));
+		String line_c = null;
+
+		String config_date = null;
+		while ((line_c = config.readLine()) != null) {
+			if (line_c.contains("Prediction:")) {
+				config_date = line_c.split("n:")[1].trim();
+			}
+		}
+		config.close();
 		BufferedReader bw_br = new BufferedReader(new FileReader(
 				detection_filepath));
 		String bw_line = bw_br.readLine();
@@ -310,7 +354,7 @@ public class AddResultsToDetection {
 				}
 			}
 
-			if (!found) {
+			if (!found && !dates.toArray()[i].toString().contains(config_date)) {
 				missing_dates[j] = dates.toArray()[i].toString();
 				System.out.println("Missing date: " + missing_dates[j]);
 				j++;

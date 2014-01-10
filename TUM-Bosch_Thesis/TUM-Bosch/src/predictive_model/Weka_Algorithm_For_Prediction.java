@@ -94,7 +94,7 @@ public class Weka_Algorithm_For_Prediction {
 			if (pred == 1.0)
 				label_pred[date.length - 1][i] = "USAGE";
 			else
-				label_pred[date.length - 1][i] = "NO USAGE";
+				label_pred[date.length - 1][i] = "NOUSAGE";
 		}
 		// for (j = 0; j < time.length; j++) {
 		// bw_predict.write(date[date.length - 1] + "," + time[j] + ","
@@ -166,7 +166,7 @@ public class Weka_Algorithm_For_Prediction {
 				// }
 				bw_actual.write("," + label[i][j] + "\n");
 				// if (j == 0)
-				// bw_pred.write(",NO USAGE\n");
+				// bw_pred.write(",NOUSAGE\n");
 				// else if (j == 1)
 				// bw_pred.write(",USAGE\n");
 				// else
@@ -300,7 +300,8 @@ public class Weka_Algorithm_For_Prediction {
 			if (pred == 1.0)
 				label_pred[k] = "USAGE";
 			else
-				label_pred[k] = "NO USAGE";
+				label_pred[k] = "NOUSAGE";
+
 			System.out
 					.println("pred: "
 							+ pred
