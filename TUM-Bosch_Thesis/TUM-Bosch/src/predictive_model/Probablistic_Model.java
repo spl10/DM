@@ -14,7 +14,7 @@ import descriptive_model.Weka_Algorithm;
 public class Probablistic_Model {
 	public static void algorithm(String Actual_filepath,
 			String detection_filepath, String prediction_filepath,
-			int timestep, int algorithm) throws Exception {
+			int timestep, String date_for_prediction) throws Exception {
 		BufferedReader br_detect = new BufferedReader(new FileReader(
 				detection_filepath));
 		BufferedReader br_predict = new BufferedReader(new FileReader(
@@ -61,7 +61,7 @@ public class Probablistic_Model {
 					}
 				}
 				int threshold = calculateThreshold(count_usage, count_nousage);
-				if (count_usage >= (count_nousage + threshold)) {
+				if ((count_usage + threshold) >= (count_nousage)) {
 					label[i] = "USAGE";
 				} else {
 					label[i] = "NOUSAGE";
@@ -80,27 +80,118 @@ public class Probablistic_Model {
 			bw.flush();
 			bw.close();
 		}
-		if (algorithm == 1)
+		BufferedReader config = new BufferedReader(new FileReader(
+				"thesis.config"));
+		String line_c = null;
+		String fp = null;
+		while ((line_c = config.readLine()) != null) {
+			if (line_c.contains("Location:")) {
+				fp = line_c.split("n:")[1].trim();
+			}
+		}
+		config.close();
+		double dt_negatives = 0, rf_negatives = 0, ks_negatives = 0, bg_negatives = 0, cs_negatives = 0;
+		predict_final = prediction_filepath.substring(0,
+				prediction_filepath.lastIndexOf("$"))
+				+ "Actual.csv";
+
+		double high_negative = 0.0;
+		int algo = 0;
+
+		/* Classifier 1 */
+		BufferedWriter output = new BufferedWriter(new FileWriter(fp
+				+ "/output.csv", true));
+		output.write(f.getName().split("_")[1] + "," + "Decision Table,"
+				+ date_for_prediction + ",");
+		output.flush();
+		output.close();
+		dt_negatives = Weka_Algorithm.applyWeka_DecisionTable(
+				detection_filepath, predict_final);
+		high_negative = dt_negatives;
+		algo = 1;
+
+		/* Classifier 2 */
+		output = new BufferedWriter(new FileWriter(fp + "/output.csv", true));
+		output.write(f.getName().split("_")[1] + "," + "Random Forest,"
+				+ date_for_prediction + ",");
+		output.flush();
+		output.close();
+		rf_negatives = Weka_Algorithm.applyWeka_RandomForest(
+				detection_filepath, predict_final);
+		if (rf_negatives > high_negative) {
+			high_negative = rf_negatives;
+			algo = 2;
+		}
+
+		/* Classifier 3 */
+		output = new BufferedWriter(new FileWriter(fp + "/output.csv", true));
+		output.write(f.getName().split("_")[1] + "," + "KStar,"
+				+ date_for_prediction + ",");
+		output.flush();
+		output.close();
+		ks_negatives = Weka_Algorithm.applyWeka_KStar(detection_filepath,
+				predict_final);
+		if (ks_negatives > high_negative) {
+			high_negative = ks_negatives;
+			algo = 3;
+		}
+
+		/* Classifier 4 */
+		output = new BufferedWriter(new FileWriter(fp + "/output.csv", true));
+		output.write(f.getName().split("_")[1] + "," + "BayesNet,"
+				+ date_for_prediction + ",");
+		output.flush();
+		output.close();
+		bg_negatives = Weka_Algorithm.applyWeka_Bagging(detection_filepath,
+				predict_final);
+		if (bg_negatives > high_negative) {
+			high_negative = bg_negatives;
+			algo = 4;
+		}
+
+		/* Classifier 5 */
+		output = new BufferedWriter(new FileWriter(fp + "/output.csv", true));
+		output.write(f.getName().split("_")[1] + ","
+				+ "Cost Sensitive Classifier," + date_for_prediction + ",");
+		output.flush();
+		output.close();
+		cs_negatives = Weka_Algorithm.applyWeka_CostSensitiveClassifier(
+				detection_filepath, predict_final);
+		if (cs_negatives > high_negative) {
+			high_negative = cs_negatives;
+			algo = 5;
+		}
+
+		/* Classifier 6 */
+		output = new BufferedWriter(new FileWriter(fp + "/output.csv", true));
+		output.write(f.getName().split("_")[1] + "," + "Vote,"
+				+ date_for_prediction + ",");
+		output.flush();
+		output.close();
+		if (algo == 1)
 			Weka_Algorithm.applyWeka_DecisionTable(detection_filepath,
 					predict_final);
-		else if (algorithm == 2)
+		else if (algo == 2)
 			Weka_Algorithm.applyWeka_RandomForest(detection_filepath,
 					predict_final);
-		else if (algorithm == 3)
+		else if (algo == 3)
 			Weka_Algorithm.applyWeka_KStar(detection_filepath, predict_final);
-		else if (algorithm == 4)
+		else if (algo == 4)
 			Weka_Algorithm.applyWeka_Bagging(detection_filepath, predict_final);
-		else if (algorithm == 5)
+		else if (algo == 5)
 			Weka_Algorithm.applyWeka_CostSensitiveClassifier(
 					detection_filepath, predict_final);
+		else
+			Weka_Algorithm.applyWeka_Vote(detection_filepath, predict_final);
+
 	}
 
 	public static int calculateThreshold(int count_usage, int count_nousage) {
 		int threshold = 0;
-		if (count_usage + count_nousage <= 5) {
+		if (count_usage + count_nousage <= 1) {
 			threshold = 0;
 		} else {
-			threshold = ((count_usage + count_nousage) / 6);
+			threshold = ((count_usage + count_nousage) / 2);
 		}
 		return threshold;
 	}

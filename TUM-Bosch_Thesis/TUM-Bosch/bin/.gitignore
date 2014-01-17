@@ -1,6 +1,5 @@
 /EMS_2_CSV
 /data_preprocessing
 /descriptive_model
-/model_class
-/predictive_model
 /visualization
+/predictive_model

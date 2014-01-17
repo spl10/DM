@@ -96,9 +96,9 @@ public class LabelCalculation {
 			for (j = 0; j < at.length; j++) {
 				hm = new TreeMap<Double, Integer>();
 				for (k = 0; k < timecount; k++) {
-					if (k > 0) {
+					if (k < timecount - 1) {
 						diff[j][k] = Math
-								.round((param[0][j][k - 1] - param[0][j][k]) * 100.0) / 100.0;
+								.round((param[0][j][k] - param[0][j][k + 1]) * 100.0) / 100.0;
 						if (diff[j][k] != 0.0 && diff[j][k] != -1
 								&& diff[j][k] > 0) {
 							stats.addValue(diff[j][k]);
@@ -108,15 +108,15 @@ public class LabelCalculation {
 								hm.put(diff[j][k], 1);
 						}
 					} else {
-						if (j > 0)
+						if (j < at.length - 1)
 							diff[j][k] = Math
-									.round((param[0][j - 1][timecount - 1] - param[0][j][k]) * 100.0) / 100.0;
+									.round((param[0][j][k] - param[0][j + 1][0]) * 100.0) / 100.0;
 						else
-							diff[j][k] = 0.0;
+							diff[j][k] = diff[j][k - 1];
 					}
 				}
 				Iterator<Map<Double, Integer>> im = valueIterator(hm);
-				median[j] = stats.getPercentile(60);
+				median[j] = stats.getPercentile(70);
 				System.out.println("median: " + median[j]);
 				while (im.hasNext()) {
 					tmp = (Entry<Double, Integer>) im.next();

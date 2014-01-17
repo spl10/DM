@@ -59,7 +59,8 @@ public class delete_output_folder {
 			}
 		} else {
 			// if file, then delete it
-			file.delete();
+			if (file.getName().split("_").length != 3)
+				file.delete();
 		}
 	}
 }

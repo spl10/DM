@@ -40,13 +40,9 @@ public class AddResultsToDetection {
 		BufferedReader config = new BufferedReader(new FileReader(
 				"thesis.config"));
 		String line_c = null;
-		String fp = null;
 		String config_month = null;
 		String config_year = null;
 		while ((line_c = config.readLine()) != null) {
-			if (line_c.contains("Location:")) {
-				fp = line_c.split("n:")[1].trim();
-			}
 			if (line_c.contains("Prediction:")) {
 				config_month = line_c.split("n:")[1].trim().split("\\.")[0];
 				config_year = line_c.split("n:")[1].trim().split("\\.")[1];
@@ -128,57 +124,8 @@ public class AddResultsToDetection {
 					&& new_dates[0].split("\\.")[2].equals(config_year)) {
 				if (j == 0)
 					file = Weka_Algorithm.applyWeka(detection_filepath);
-				BufferedWriter output = new BufferedWriter(new FileWriter(fp
-						+ "/output.csv", true));
-				output.write(f.getName().split("_")[1] + ","
-						+ "Decision Table," + date_for_prediction + ",");
-				output.flush();
-				output.close();
-				// System.out.println("\n" + wif.getPrediction_filepath() +
-				// "\n");
 				Probablistic_Model.algorithm(file_act, detection_filepath,
-						prediction_filepath, timestep, 1);
-				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
-						true));
-				output.write(f.getName().split("_")[1] + "," + "Random Forest,"
-						+ date_for_prediction + ",");
-				output.flush();
-				output.close();
-				// System.out.println("\n" + wif.getPrediction_filepath() +
-				// "\n");
-				Probablistic_Model.algorithm(file_act, detection_filepath,
-						prediction_filepath, timestep, 2);
-				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
-						true));
-				output.write(f.getName().split("_")[1] + "," + "KStar,"
-						+ date_for_prediction + ",");
-				output.flush();
-				output.close();
-				// System.out.println("\n" + wif.getPrediction_filepath() +
-				// "\n");
-				Probablistic_Model.algorithm(file_act, detection_filepath,
-						prediction_filepath, timestep, 3);
-				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
-						true));
-				output.write(f.getName().split("_")[1] + "," + "Bagging,"
-						+ date_for_prediction + ",");
-				output.flush();
-				output.close();
-				// System.out.println("\n" + wif.getPrediction_filepath() +
-				// "\n");
-				Probablistic_Model.algorithm(file_act, detection_filepath,
-						prediction_filepath, timestep, 4);
-				output = new BufferedWriter(new FileWriter(fp + "/output.csv",
-						true));
-				output.write(f.getName().split("_")[1] + ","
-						+ "Cost Sensitive Classifier," + date_for_prediction
-						+ ",");
-				output.flush();
-				output.close();
-				// System.out.println("\n" + wif.getPrediction_filepath() +
-				// "\n");
-				Probablistic_Model.algorithm(file_act, detection_filepath,
-						prediction_filepath, timestep, 5);
+						prediction_filepath, timestep, date_for_prediction);
 			}
 		}
 	}
@@ -231,7 +178,13 @@ public class AddResultsToDetection {
 		String actual_filepath = filepath.split("\\.")[0] + "_"
 				+ date_for_prediction + "_Actual.csv";
 		File f = new File(prediction_filepath);
-
+		File f1 = new File(actual_filepath);
+		if (f1.exists()) {
+			f1.delete();
+		}
+		if (f.exists()) {
+			f.delete();
+		}
 		BufferedReader br = new BufferedReader(new FileReader(filepath));
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				prediction_filepath, true));
@@ -239,13 +192,15 @@ public class AddResultsToDetection {
 				actual_filepath));
 		String line = br.readLine();
 		int i = 0;
-		if (f.length() == 0) {
-			bw.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
-			bw_actual
-					.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
-		}
+		boolean first = true;
 		while ((line = br.readLine()) != null) {
 			if (line.split(",")[0].equals(date_for_prediction)) {
+				if (first) {
+					bw.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
+					bw_actual
+							.write("date,time,weekday, dt00233_0dhw_setpoint, dt00209_0-1outdoor_temperature_measured_value,LABEL\n");
+					first = false;
+				}
 				if (i == 0)
 					bw.write(line.split(",")[0] + "," + line.split(",")[1]
 							+ "," + line.split(",")[2] + ","
@@ -290,7 +245,6 @@ public class AddResultsToDetection {
 			String detection_filepath, String filepath) throws Exception {
 
 		String[] missing_dates = findMissingDates(detection_filepath, filepath);
-
 		BufferedWriter bw = new BufferedWriter(new FileWriter(
 				detection_filepath, true));
 		int i = 0;
