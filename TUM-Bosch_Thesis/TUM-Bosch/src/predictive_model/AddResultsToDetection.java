@@ -11,8 +11,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import descriptive_model.Weka_Algorithm;
-
 public class AddResultsToDetection {
 	/**
 	 * Building the Detection File: The previous data is written into the
@@ -122,8 +120,9 @@ public class AddResultsToDetection {
 
 			if (new_dates[0].split("\\.")[1].equals(config_month)
 					&& new_dates[0].split("\\.")[2].equals(config_year)) {
-				if (j == 0)
-					file = Weka_Algorithm.applyWeka(detection_filepath);
+				// if (j == 0)
+				// file = Weka_Algorithm.applyWeka(detection_filepath);
+
 				Probablistic_Model.algorithm(file_act, detection_filepath,
 						prediction_filepath, timestep, date_for_prediction);
 			}

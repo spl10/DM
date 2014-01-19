@@ -28,17 +28,17 @@ public class EMS_BinaryParser {
 							+ input_bin);
 
 			File path_output = new File(
-					"C:\\Users\\SIP2LOL\\Documents\\MyTool\\EMS_Converter\\SystemFiles\\out.csv");
+					"/Users/roshinisachithanandan/git/DM/TUM-Bosch_Thesis/TUM-Bosch/SystemFiles/out.csv");
 
 			Process proc = Runtime
 					.getRuntime()
-					.exec("C:\\Users\\SIP2LOL\\Documents\\MyTool\\EMS_Converter\\SystemFiles\\EMS_Compressor.exe"
+					.exec("/opt/local/bin/wine /Users/roshinisachithanandan/git/DM/TUM-Bosch_Thesis/TUM-Bosch/SystemFiles/EMS_Compressor.exe"
 							+ " -i "
 							+ input_bin
 							+ " -p "
-							+ "C:\\Users\\SIP2LOL\\Documents\\MyTool\\EMS_Converter\\SystemFiles\\auto_test.emspd"
+							+ "/Users/roshinisachithanandan/git/DM/TUM-Bosch_Thesis/TUM-Bosch/SystemFiles/auto_test.emspd"
 							+ " -V "
-							+ "C:\\Users\\SIP2LOL\\Documents\\MyTool\\EMS_Converter\\SystemFiles\\out.csv");
+							+ "/Users/roshinisachithanandan/git/DM/TUM-Bosch_Thesis/TUM-Bosch/SystemFiles/out.csv");
 
 			// abwarten bis Prozess beendet!!
 			int count = 0;

@@ -55,13 +55,13 @@ public class UserInput {
 			}
 		}
 		config.close();
-		File f = new File(filepath + "\\output.csv");
+		File f = new File(filepath + "/output.csv");
 		if (f.exists()) {
 			f.delete();
 		}
 		String file_suffix = "_" + timestep + "ts_vis.txt";
 		BufferedWriter output = new BufferedWriter(new FileWriter(filepath
-				+ "\\output.csv", true));
+				+ "/output.csv", true));
 		output.write("Gateway,Algorithm,Date,Correctly_Classified_Instances,False_Positive,Precision,Recall,Predictive_Accuracy,Relative_Absolute_Error\n");
 		output.flush();
 		output.close();
@@ -77,9 +77,8 @@ public class UserInput {
 				List<String> li = new ArrayList<String>();
 				if (detection_filepath == null
 						|| !detection_filepath.contains(gateways[i].getName())) {
-					detection_filepath = location + "\\"
-							+ gateways[i].getName() + "\\out_gt"
-							+ gateways[i].getName().split("_")[1]
+					detection_filepath = location + "/" + gateways[i].getName()
+							+ "/out_gt" + gateways[i].getName().split("_")[1]
 							+ "_Actual.csv";
 					f = new File(detection_filepath);
 					if (f.exists()) {
@@ -112,7 +111,7 @@ public class UserInput {
 											String file_s = "_" + timestep
 													+ "ts_vis_Actual.csv";
 											file_act = output_folder[l]
-													+ "\\out_gt"
+													+ "/out_gt"
 													+ gateways[i].getName()
 															.split("_")[1]
 													+ "_"
@@ -136,7 +135,7 @@ public class UserInput {
 										} else {
 											String rest_folder = output_folder[l]
 													.getPath()
-													+ "\\out_gt"
+													+ "/out_gt"
 													+ gateways[i].getName()
 															.split("_")[1]
 													+ "_"
@@ -156,7 +155,7 @@ public class UserInput {
 								}
 								if (ff == 0) {
 									String rest_folder = months[k].getPath()
-											+ "\\output\\";
+											+ "/output/";
 									File dir = new File(rest_folder);
 									if (!dir.exists()) {
 										dir.mkdir();

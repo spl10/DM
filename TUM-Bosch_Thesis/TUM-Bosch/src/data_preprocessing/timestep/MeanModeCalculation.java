@@ -12,6 +12,7 @@ public class MeanModeCalculation {
 
 	/**
 	 * @param ns
+	 * @param l
 	 * @param k
 	 * @param filepath
 	 * @param complete_days
@@ -22,16 +23,13 @@ public class MeanModeCalculation {
 	 * @throws Exception
 	 */
 	public static void meanModePreprocessing(Detection detection,
-			Number_of_starts ns) throws Exception {
+			Number_of_starts ns, int l) throws Exception {
 		Set<String> complete_days = detection.getComplete_days();
 		int timestep = detection.getTimestep();
 		int index = 0, j = 0, m = 0, k = 0, time = 0;
 		if ((60 % timestep) == 0)
 			index = ((24 * 60 / timestep)) * (complete_days.toArray().length)
 					+ 1;
-		else
-			index = ((24 * 60 / timestep) + 1)
-					* (complete_days.toArray().length) + 1;
 		String[] selectedParameters = detection.getSelectedParameters();
 		int selectionlength = selectedParameters.length;
 		String[] date_arr = new String[index];
@@ -57,11 +55,12 @@ public class MeanModeCalculation {
 			time = (hrs * 60) + mins;
 
 			for (int c = 0; c < complete_days.toArray().length; c++) {
-				if (complete_days.toArray()[c].equals(line.split(",")[0])) {
+				if (complete_days.toArray()[c].equals(line.split(",")[0])
+						&& j < index) {
+
 					date_arr[j] = line.split(",")[0];
 					sampling_time[j] = formatTime(mins,
 							line.split(",")[1].split(":")[0]);
-
 					for (int i = 0; i < temp.length; i++) {
 						String tmp = null;
 						if (temp[i] < line.split("\\,").length)
@@ -87,20 +86,18 @@ public class MeanModeCalculation {
 						} else {
 							param[i] = 0.0;
 						}
-						if( type[i].equals("Binary")){
-							if ((time % timestep == 0)) {
-								if (count[i] > (k / 2))
-									mean[i][j] = "1";
-								else
-									mean[i][j] = "0";
-								// System.out.println("j: " + j + "\t date_arr["
-								// + j + "]: " + date_arr[j]
-								// + " \t sampling_time[" + j + "]: "
-								// + sampling_time[j] + "\t i: " + i
-								// + "\t mean[" + i + "][" + j + "]: "
-								// + mean[i][j]);
-								count[i] = 0;
-								count[i] += param[i];
+						if (type[i].equals("Binary")) {
+							if ((time % timestep == 0)
+									|| (c == complete_days.toArray().length - 1 && time == 1439)) {
+								if (j > 0) {
+									if (count[i] > (k / 2))
+										mean[i][j - 1] = "1";
+									else {
+										mean[i][j - 1] = "0";
+									}
+									count[i] = 0;
+									count[i] += param[i];
+								}
 								if (i == (selectionlength - 1))
 									j++;
 							} else {
@@ -108,37 +105,33 @@ public class MeanModeCalculation {
 									count[i]++;
 							}
 						}
-						if( type[i].equals("FindMax")){
-							if ((time % timestep == 0)) {
-								mean[i][j] = String
-										.valueOf(Math
-												.round((sum[i] / timestep) * 100.0) / 100.0);
-								// System.out.println("j: " + j + "\t date_arr["
-								// + j + "]: " + date_arr[j]
-								// + " \t sampling_time[" + j + "]: "
-								// + sampling_time[j] + "\t i: " + i
-								// + "\t mean[" + i + "][" + j + "]: "
-								// + mean[i][j]);
-								sum[i] = 0;
-								sum[i] += param[i];
+						if (type[i].equals("FindMax")) {
+							if ((time % timestep == 0)
+									|| (c == complete_days.toArray().length - 1 && time == 1439)) {
+								if (j > 0) {
+									mean[i][j - 1] = String
+											.valueOf(Math
+													.round((sum[i] / timestep) * 100.0) / 100.0);
+									sum[i] = 0;
+									sum[i] += param[i];
+								}
 								if (i == (selectionlength - 1))
 									j++;
 							} else {
 								sum[i] += param[i];
 							}
 						}
-						if( type[i].equals("Numeric")){ 
-							if ((time % timestep == 0)) {
-								mean[i][j] = String.valueOf(Math
-										.round((sum[i] / k) * 100.0) / 100.0);
-								// System.out.println("j: " + j + "\t date_arr["
-								// + j + "]: " + date_arr[j]
-								// + " \t sampling_time[" + j + "]: "
-								// + sampling_time[j] + "\t i: " + i
-								// + "\t mean[" + i + "][" + j + "]: "
-								// + mean[i][j]);
-								sum[i] = 0;
-								sum[i] += param[i];
+						if (type[i].equals("Numeric")) {
+							if ((time % timestep == 0)
+									|| (c == complete_days.toArray().length - 1 && time == 1439)) {
+								if (j > 0) {
+									mean[i][j - 1] = String
+											.valueOf(Math
+													.round((sum[i] / k) * 100.0) / 100.0);
+									sum[i] = 0;
+									sum[i] += param[i];
+								}
+
 								if (i == (selectionlength - 1))
 									j++;
 							} else {
@@ -154,7 +147,17 @@ public class MeanModeCalculation {
 					m++;
 				}
 			}
+
 		}
+
+		// for (j = 0; j < index - 1; j++) {
+		// for (int i = 0; i < selectionlength; i++) {
+		// System.out.println("j: " + j + "\t date_arr[" + j + "]: "
+		// + date_arr[j] + " \t sampling_time[" + j + "]: "
+		// + sampling_time[j] + "\t i: " + i + "\t mean[" + i
+		// + "][" + j + "]: " + mean[i][j]);
+		// }
+		// }
 		System.out.println(" \t m:" + m + " \t no. of complete days: "
 				+ complete_days.toArray().length);
 		br.close();

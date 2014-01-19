@@ -116,8 +116,15 @@ public class LabelCalculation {
 					}
 				}
 				Iterator<Map<Double, Integer>> im = valueIterator(hm);
-				median[j] = stats.getPercentile(70);
-				System.out.println("median: " + median[j]);
+				median[j] = stats.getPercentile(55);
+				// median[j] = stats.getMean();
+				// System.out.print(" getVariance: " + stats.getVariance());
+				// System.out.print(" getStandardDeviation: "
+				// + stats.getStandardDeviation());
+				// System.out.print(" getGeometricMean: "
+				// + stats.getGeometricMean());
+				// System.out.print("getMean: " + stats.getMean());
+				System.out.println(" median: " + median[j]);
 				while (im.hasNext()) {
 					tmp = (Entry<Double, Integer>) im.next();
 					System.out.print(tmp + " , ");

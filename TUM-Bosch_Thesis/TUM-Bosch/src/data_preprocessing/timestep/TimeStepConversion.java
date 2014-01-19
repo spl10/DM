@@ -85,13 +85,14 @@ public class TimeStepConversion {
 		System.out.println("Complete_days without missing data: "
 				+ complete_days);
 		System.out.println("No. of complete Days: " + complete_days.size());
-
+		detection.setFilepath(CompleteDaysIdentification.dayCompletion(
+				complete_days, filepath));
 		/*
 		 * * Every line of the csv file contains values separated by comma. So
 		 * we retrieve the values by splitting the line with comma.The
 		 * corresponding parameters are retrieved based on the position in the
 		 * csv file.
 		 */
-		MeanModeCalculation.meanModePreprocessing(detection, ns);
+		MeanModeCalculation.meanModePreprocessing(detection, ns, l);
 	}
 }

@@ -26,6 +26,7 @@ public class Visualization {
 	@SuppressWarnings("resource")
 	public static void visualize(String filepath, String[] date, int timestep,
 			int selectionlength, String[] selectedParameters) throws Exception {
+
 		BufferedReader br = new BufferedReader(new FileReader(filepath));
 		filepath = filepath.substring(0, filepath.indexOf(".")) + "_vis.txt";
 		BufferedWriter bw = new BufferedWriter(new FileWriter(filepath));
@@ -36,7 +37,7 @@ public class Visualization {
 		 */
 		Set<String> uniqueSet = new LinkedHashSet<String>(Arrays.asList(date));
 		int uniquedate_l = uniqueSet.toArray().length, i = 0;
-		System.out.println(uniqueSet);
+		// System.out.println(uniqueSet);
 		/*
 		 * new_l is the number of values calculated for every hour(60) in a
 		 * day(24).
@@ -99,7 +100,7 @@ public class Visualization {
 		}
 		/* Get unique set of time based on the timestep */
 		Set<String> unique_time = TimeArraytoList.arraytoListConversion(time,
-				act_date);
+				act_date, timestep);
 
 		int uniquetime_l = unique_time.toArray().length;
 		String[][] tot_mean = new String[selectionlength * uniquedate_l][uniquetime_l];
