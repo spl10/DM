@@ -1,5 +1,14 @@
 /EMS_2_CSV
 /data_preprocessing
 /descriptive_model
-/visualization
+/model_class
 /predictive_model
+/visualization
+/Miscellaneous
+/inputFileCreation
+/dataPreprocessing
+/ems_2_csv_ExternalPackage
+/miscellaneous
+/model
+/descriptiveModel
+/predictiveModel

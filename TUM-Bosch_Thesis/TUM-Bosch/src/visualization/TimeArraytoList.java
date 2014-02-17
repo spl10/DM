@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import data_preprocessing.timestep.CompleteDaysIdentification;
+import dataPreprocessing.CompleteDaysIdentification;
 
 public class TimeArraytoList {
 	public static Set<String> arraytoListConversion(String[][] time,
