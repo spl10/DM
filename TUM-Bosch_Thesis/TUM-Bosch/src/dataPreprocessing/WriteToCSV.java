@@ -6,7 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import visualization.Visualization;
+import dataVisualization.Visualization;
 
 /**
  * Writes the output of Time-Series Conversion into a csv file.

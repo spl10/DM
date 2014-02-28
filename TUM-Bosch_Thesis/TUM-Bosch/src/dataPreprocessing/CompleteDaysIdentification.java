@@ -31,8 +31,8 @@ public class CompleteDaysIdentification {
 			ArrayList<String> date_list, int lof, String[][] date_time) {
 
 		Set<String> complete_days = new LinkedHashSet<String>(date_list);
-		System.out.println("All available days: " + complete_days);
-		System.out.println("No. of Available Days: " + complete_days.size());
+		// System.out.println("All available days: " + complete_days);
+		// System.out.println("No. of Available Days: " + complete_days.size());
 		Iterator<String> li = complete_days.iterator();
 		ArrayList<String> remove_list = new ArrayList<String>();
 		int[] li_length = new int[date_list.toArray().length];
@@ -45,8 +45,8 @@ public class CompleteDaysIdentification {
 			}
 			if (li_length[i] < 1440) {
 
-				System.out.println("i: " + i + " with length[" + i + "]: "
-						+ li_length[i] + " for Date: " + li_date);
+				// System.out.println("i: " + i + " with length[" + i + "]: "
+				// + li_length[i] + " for Date: " + li_date);
 				if (li_length[i] < 1400)
 					remove_list.add(li_date);
 			}
@@ -173,10 +173,10 @@ public class CompleteDaysIdentification {
 			// System.out.println();
 			bw.write("\n");
 		}
-		System.out.println(filepath);
-		System.out.println("K==complete_days.size *1440 | k: " + k
-				+ " complete_days.size() * 1440: "
-				+ (complete_days.size() * 1440));
+		// System.out.println(filepath);
+		// System.out.println("K==complete_days.size *1440 | k: " + k
+		// + " complete_days.size() * 1440: "
+		// + (complete_days.size() * 1440));
 		br.close();
 		bw.flush();
 		bw.close();

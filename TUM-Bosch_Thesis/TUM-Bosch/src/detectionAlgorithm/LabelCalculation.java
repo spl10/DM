@@ -1,4 +1,4 @@
-package descriptiveModel;
+package detectionAlgorithm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,7 +24,6 @@ import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
  * 
  */
 public class LabelCalculation {
-	@SuppressWarnings("unchecked")
 	public static void calculateLabelBasedonActTemp(String filepath,
 			int timestep, Set<String> uniqueSet, int selectionlength)
 			throws Exception {
@@ -55,17 +54,16 @@ public class LabelCalculation {
 		DescriptiveStatistics stats = new DescriptiveStatistics();
 		Map<Double, Integer> hm = new TreeMap<Double, Integer>();
 		Prediction prediction = new Prediction();
-		Map.Entry<Double, Integer> tmp = null;
+		// Map.Entry<Double, Integer> tmp = null;
 		int j = 0;
-		int month = 0;
 		// DT00233_1-2DHW_Actual_Temperature_$01.09.2013_Sonntag
 		if (uniquedate_l != 0) {
 			for (int n = 0; n < selectionlength; n++) {
 				names[n] = line.split(",")[n + 2].toLowerCase().substring(0,
 						line.split(",")[n + 2].indexOf("$") - 1);
 			}
-			month = Integer.parseInt(line.split(",")[2].split("\\$")[1]
-					.split("_")[0].split("\\.")[1]);
+			// int month = Integer.parseInt(line.split(",")[2].split("\\$")[1]
+			// .split("_")[0].split("\\.")[1]);
 			for (int i = 0; i < line.split(",").length; i++) {
 				String act_temp = line.split(",")[i].toLowerCase();
 				if (act_temp.contains("actual_temperature")) {
@@ -76,7 +74,7 @@ public class LabelCalculation {
 
 				}
 			}
-			System.out.println(month);
+			System.out.println("Processing: " + filepath);
 			int i = 0, k = 0;
 			while (((line = br.readLine()) != null) && (i < timecount)) {
 				time[i] = line.split(",")[0];
@@ -121,19 +119,19 @@ public class LabelCalculation {
 							diff[j][k] = diff[j][k - 1];
 					}
 				}
-				Iterator<Map<Double, Integer>> im = valueIterator(hm);
+				// Iterator<Map<Double, Integer>> im = valueIterator(hm);
 				if (cpr[j] == 0)
-					median[j] = stats.getPercentile(55);
-				else
 					median[j] = stats.getPercentile(70);
-				System.out.println("j: " + j + " median: " + median[j]);
-				while (im.hasNext()) {
-					tmp = (Entry<Double, Integer>) im.next();
-					System.out.print(tmp + " , ");
-				}
-				System.out.println();
+				else
+					median[j] = stats.getPercentile(60);
+				// System.out.println("j: " + j + " median: " + median[j]);
+				// while (im.hasNext()) {
+				// tmp = (Entry<Double, Integer>) im.next();
+				// System.out.print(tmp + " , ");
+				// }
+				// System.out.println();
 			}
-			System.out.println();
+			// System.out.println();
 			for (j = 0; j < at.length; j++) {
 				for (k = 0; k < timecount; k++) {
 					if (label[j][k] == null)

@@ -45,7 +45,7 @@ public class MeanModeCalculation {
 		BufferedReader br = new BufferedReader(new FileReader(filepath));
 		String line = br.readLine();
 
-		System.out.println();
+		// System.out.println();
 		while ((line = br.readLine()) != null) {
 			int mins = Integer.parseInt(line.split(",")[1].split(":")[1]);
 			int hrs = Integer.parseInt(line.split(",")[1].split(":")[0]);
@@ -155,8 +155,8 @@ public class MeanModeCalculation {
 		// + "][" + j + "]: " + mean[i][j]);
 		// }
 		// }
-		System.out.println(" \t m:" + m + " \t no. of complete days: "
-				+ complete_days.toArray().length);
+		// System.out.println(" \t m:" + m + " \t no. of complete days: "
+		// + complete_days.toArray().length);
 		br.close();
 
 		/* Write the output to the CSV file */

@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import miscellaneous.Probablistic_Model;
+
 public class AddResultsToDetection {
 	/**
 	 * Building the Detection File: The previous data is written into the
@@ -304,7 +306,7 @@ public class AddResultsToDetection {
 
 			if (!found && !dates.toArray()[i].toString().contains(config_date)) {
 				missing_dates[j] = dates.toArray()[i].toString();
-				System.out.println("Missing date: " + missing_dates[j]);
+				// System.out.println("Missing date: " + missing_dates[j]);
 				j++;
 			}
 		}

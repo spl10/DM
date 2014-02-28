@@ -90,9 +90,9 @@ public class TimeStepConversion {
 		Set<String> complete_days = CompleteDaysIdentification
 				.identifyingCompleteDays(date_list, j, date_time);
 		detection.setComplete_days(complete_days);
-		System.out.println("Complete_days without missing data: "
-				+ complete_days);
-		System.out.println("No. of complete Days: " + complete_days.size());
+		// System.out.println("Complete_days without missing data: "
+		// + complete_days);
+		// System.out.println("No. of complete Days: " + complete_days.size());
 		detection.setFilepath(CompleteDaysIdentification.dayCompletion(
 				complete_days, filepath));
 		/*

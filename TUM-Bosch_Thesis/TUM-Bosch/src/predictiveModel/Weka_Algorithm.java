@@ -1,4 +1,4 @@
-package descriptiveModel;
+package predictiveModel;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Random;
 
-import predictiveModel.CSVToArffConversion;
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.NaiveBayesUpdateable;
 import weka.classifiers.evaluation.Evaluation;
@@ -51,8 +50,8 @@ public class Weka_Algorithm {
 		Evaluation evaluation = new Evaluation(data);
 		evaluation.crossValidateModel(classifier, data, 10, new Random(1));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
 		System.out.println(evaluation.toSummaryString());
 		System.out.println(evaluation.toMatrixString());
 		return file;
@@ -146,8 +145,8 @@ public class Weka_Algorithm {
 		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
 				false));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
 		System.out.println(evaluation.toMatrixString());
 		return (evaluation.numFalseNegatives(0) + evaluation
 				.numFalsePositives(0));
@@ -230,8 +229,8 @@ public class Weka_Algorithm {
 		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
 				false));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
 		System.out.println(evaluation.toMatrixString());
 		return (evaluation.numFalseNegatives(0) + evaluation
 				.numFalsePositives(0));
@@ -332,8 +331,8 @@ public class Weka_Algorithm {
 		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
 				false));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
 		System.out.println(evaluation.toMatrixString());
 		return (evaluation.numFalseNegatives(0) + evaluation
 				.numFalsePositives(0));
@@ -442,8 +441,8 @@ public class Weka_Algorithm {
 		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
 				false));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
 		System.out.println(evaluation.toMatrixString());
 		return (evaluation.numFalseNegatives(0) + evaluation
 				.numFalsePositives(0));
@@ -539,8 +538,8 @@ public class Weka_Algorithm {
 		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
 				false));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
 		System.out.println(evaluation.toMatrixString());
 		return (evaluation.numFalseNegatives(0) + evaluation
 				.numFalsePositives(0));
@@ -708,8 +707,8 @@ public class Weka_Algorithm {
 		System.out.println(evaluation.toSummaryString("\nResults\n======\n",
 				false));
 
-		System.out.println(evaluation.toCumulativeMarginDistributionString());
-		System.out.println(evaluation.toClassDetailsString());
+		// System.out.println(evaluation.toCumulativeMarginDistributionString());
+		// System.out.println(evaluation.toClassDetailsString());
 		System.out.println(evaluation.toMatrixString());
 	}
 }

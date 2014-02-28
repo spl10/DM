@@ -1,4 +1,4 @@
-package visualization;
+package dataVisualization;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import descriptiveModel.LabelCalculation;
+import detectionAlgorithm.LabelCalculation;
 
 public class Visualization {
 	/**
@@ -98,7 +98,7 @@ public class Visualization {
 				}
 			}
 		}
-		/* Get unique set of time based on the timestep */
+		/* Get unique set of time based on the time-step. */
 		Set<String> unique_time = TimeArraytoList.arraytoListConversion(time,
 				act_date, timestep);
 
@@ -145,14 +145,15 @@ public class Visualization {
 			}
 			k++;
 		}
-
-		// System.out.println();
-
-		System.out.println("length of the array acc. to timestep: " + timecount
-				+ " \t k:" + uniquetime_l + "\t unique_date:" + uniquedate_l);
-
 		bw.flush();
 		bw.close();
+		/*
+		 * System.out.println();
+		 * System.out.println("length of the array acc. to timestep: " +
+		 * timecount + " \t k:" + uniquetime_l + "\t unique_date:" +
+		 * uniquedate_l);
+		 */
+		/* Label Assignment on Change Point Detection. */
 		LabelCalculation.calculateLabelBasedonActTemp(filepath, timestep,
 				uniqueSet, selectionlength);
 	}

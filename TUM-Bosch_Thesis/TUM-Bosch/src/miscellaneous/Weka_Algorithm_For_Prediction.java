@@ -1,4 +1,4 @@
-package predictiveModel;
+package miscellaneous;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import predictiveModel.CSVToArffConversion;
+import predictiveModel.Weka_Algorithm;
 import model.Prediction;
 import weka.classifiers.misc.InputMappedClassifier;
 import weka.classifiers.trees.RandomForest;
@@ -13,7 +15,6 @@ import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
-import descriptiveModel.Weka_Algorithm;
 
 public class Weka_Algorithm_For_Prediction {
 	public static void applyWeka(String filepath_detect,

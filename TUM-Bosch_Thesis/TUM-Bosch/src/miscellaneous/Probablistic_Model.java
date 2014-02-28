@@ -1,4 +1,4 @@
-package predictiveModel;
+package miscellaneous;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import descriptiveModel.Weka_Algorithm;
+import predictiveModel.Weka_Algorithm;
 
 public class Probablistic_Model {
 	public static void algorithm(String Actual_filepath,
@@ -96,7 +96,6 @@ public class Probablistic_Model {
 				+ "Actual.csv";
 
 		double low_falsevalues = 0.0;
-		int algo = 0;
 
 		/* Classifier 1 */
 		BufferedWriter output = new BufferedWriter(new FileWriter(fp
@@ -108,7 +107,6 @@ public class Probablistic_Model {
 		dt_falses = Weka_Algorithm.applyWeka_DecisionTable(detection_filepath,
 				predict_final);
 		low_falsevalues = dt_falses;
-		algo = 1;
 
 		/* Classifier 2 */
 		output = new BufferedWriter(new FileWriter(fp + "/output.csv", true));
@@ -120,7 +118,6 @@ public class Probablistic_Model {
 				predict_final);
 		if (rf_falses < low_falsevalues) {
 			low_falsevalues = rf_falses;
-			algo = 2;
 		}
 
 		/* Classifier 3 */
@@ -133,7 +130,6 @@ public class Probablistic_Model {
 				predict_final);
 		if (ks_falses < low_falsevalues) {
 			low_falsevalues = ks_falses;
-			algo = 3;
 		}
 
 		/* Classifier 4 */
@@ -146,7 +142,6 @@ public class Probablistic_Model {
 				predict_final);
 		if (bg_falses < low_falsevalues) {
 			low_falsevalues = bg_falses;
-			algo = 4;
 		}
 
 		/* Classifier 5 */
@@ -159,7 +154,6 @@ public class Probablistic_Model {
 				detection_filepath, predict_final);
 		if (cs_falses < low_falsevalues) {
 			low_falsevalues = cs_falses;
-			algo = 5;
 		}
 
 		/* Classifier 6 */
@@ -168,20 +162,6 @@ public class Probablistic_Model {
 				+ date_for_prediction + ",");
 		output.flush();
 		output.close();
-		// if (algo == 1)
-		// Weka_Algorithm.applyWeka_DecisionTable(detection_filepath,
-		// predict_final);
-		// else if (algo == 2)
-		// Weka_Algorithm.applyWeka_RandomForest(detection_filepath,
-		// predict_final);
-		// else if (algo == 3)
-		// Weka_Algorithm.applyWeka_KStar(detection_filepath, predict_final);
-		// else if (algo == 4)
-		// Weka_Algorithm.applyWeka_Bagging(detection_filepath, predict_final);
-		// else if (algo == 5)
-		// Weka_Algorithm.applyWeka_CostSensitiveClassifier(
-		// detection_filepath, predict_final);
-		// else
 		Weka_Algorithm.applyWeka_Vote(detection_filepath, predict_final);
 
 	}
